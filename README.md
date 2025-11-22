@@ -119,6 +119,89 @@ Works in all modern browsers that support:
 - LocalStorage API
 - Flexbox and CSS Grid
 
+## Deployment
+
+The live site is hosted on **Cloudflare Pages** at: **https://trach-trainer.pages.dev**
+
+### Deploying Updates
+
+There are two ways to deploy updates to the live site:
+
+#### Method 1: Automatic Deployment via GitHub (Recommended)
+
+Set up automatic deployments so every push to `main` triggers a new deployment:
+
+1. Go to [Cloudflare Pages Dashboard](https://dash.cloudflare.com/?to=/:account/pages)
+2. Select the **trach-trainer** project
+3. Go to **Settings** → **Builds & deployments**
+4. Under **Build configurations**, connect to your GitHub repository
+5. Set **Production branch** to `main`
+
+Once configured, simply:
+```bash
+git add .
+git commit -m "Your update message"
+git push origin main
+```
+
+Cloudflare will automatically build and deploy within 1-2 minutes.
+
+#### Method 2: Manual Deployment via Wrangler CLI
+
+For immediate deployment or when you want more control:
+
+**First-time setup:**
+```bash
+# Authenticate with Cloudflare (only needed once)
+npx wrangler login
+```
+
+**Deploy updates:**
+```bash
+# From the project root directory
+npx wrangler pages deploy . --project-name=trach-trainer --commit-dirty=true
+```
+
+This uploads your files directly and deploys in seconds.
+
+**Common deployment commands:**
+```bash
+# Deploy current directory
+npx wrangler pages deploy .
+
+# Deploy with a commit message
+npx wrangler pages deploy . --commit-message="Add new feature"
+
+# Deploy a specific branch
+npx wrangler pages deploy . --branch=development
+```
+
+### Viewing Deployments
+
+- **Production URL**: https://trach-trainer.pages.dev
+- **Dashboard**: https://dash.cloudflare.com → Pages → trach-trainer
+- **Deployment history**: View all past deployments and roll back if needed
+
+### Custom Domain (Optional)
+
+To use a custom domain like `trach.vsarathy.com`:
+
+1. Go to Cloudflare Pages Dashboard → **trach-trainer**
+2. Click **Custom domains**
+3. Click **Set up a custom domain**
+4. Enter your subdomain (e.g., `trach.vsarathy.com`)
+5. Follow the DNS configuration instructions
+
+### Future: Adding Backend Features
+
+When you're ready to add user authentication and cloud storage:
+
+1. **Cloudflare Workers** - Add API endpoints for backend logic
+2. **Cloudflare D1** - SQLite database for user data and sessions
+3. **Cloudflare KV** - Key-value storage for sessions/cache
+
+All can be configured in the same project with `wrangler.toml`.
+
 ## The Trachtenberg Rules
 
 Quick reference (see Rules panel in app for details):
