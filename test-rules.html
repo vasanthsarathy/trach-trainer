@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trachtenberg Rules Test Suite</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .test-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .test-results {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .multiplier-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+    }
+
+    .multiplier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .test-case {
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+    }
+
+    .test-pass {
+      border-left: 4px solid var(--color-success);
+    }
+
+    .test-fail {
+      border-left: 4px solid var(--color-error);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .summary-card {
+      background-color: var(--bg-secondary);
+      padding: var(--space-6);
+      border-radius: var(--radius-lg);
+      text-align: center;
+    }
+
+    .summary-value {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-light);
+      margin-bottom: var(--space-2);
+    }
+
+    .summary-label {
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="test-header">
+    <h1 style="font-weight: var(--font-light); font-size: var(--text-5xl); margin-bottom: var(--space-4);">
+      Trachtenberg Rules Test Suite
+    </h1>
+    <button class="btn btn-primary" onclick="runTests()">Run Tests</button>
+  </div>
+
+  <div class="summary" id="summary">
+    <div class="summary-card">
+      <div class="summary-value" id="total-tests">0</div>
+      <div class="summary-label">Total Tests</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-value text-success" id="passed-tests">0</div>
+      <div class="summary-label">Passed</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-value text-error" id="failed-tests">0</div>
+      <div class="summary-label">Failed</div>
+    </div>
+  </div>
+
+  <div id="test-results" class="test-results"></div>
+
+  <script src="utils.js"></script>
+  <script src="rules.js"></script>
+  <script>
+    // Test cases for each multiplier
+    const testCases = {
+      5: [
+        { input: 123, expected: 615 },
+        { input: 456, expected: 2280 },
+        { input: 789, expected: 3945 },
+        { input: 24, expected: 120 },
+        { input: 67, expected: 335 },
+        { input: 841, expected: 4205 },
+        { input: 847, expected: 4235 },
+        { input: 9999, expected: 49995 },
+        { input: 1234, expected: 6170 },
+        { input: 5678, expected: 28390 }
+      ],
+      6: [
+        { input: 123, expected: 738 },
+        { input: 456, expected: 2736 },
+        { input: 789, expected: 4734 },
+        { input: 24, expected: 144 },
+        { input: 67, expected: 402 },
+        { input: 497, expected: 2982 },
+        { input: 847, expected: 5082 },
+        { input: 9999, expected: 59994 },
+        { input: 1234, expected: 7404 },
+        { input: 5678, expected: 34068 }
+      ],
+      7: [
+        { input: 123, expected: 861 },
+        { input: 456, expected: 3192 },
+        { input: 789, expected: 5523 },
+        { input: 24, expected: 168 },
+        { input: 67, expected: 469 },
+        { input: 841, expected: 5887 },
+        { input: 9999, expected: 69993 },
+        { input: 1234, expected: 8638 },
+        { input: 5678, expected: 39746 }
+      ],
+      9: [
+        { input: 123, expected: 1107 },
+        { input: 456, expected: 4104 },
+        { input: 789, expected: 7101 },
+        { input: 24, expected: 216 },
+        { input: 67, expected: 603 },
+        { input: 841, expected: 7569 },
+        { input: 9999, expected: 89991 },
+        { input: 1234, expected: 11106 },
+        { input: 5678, expected: 51102 }
+      ],
+      11: [
+        { input: 123, expected: 1353 },
+        { input: 456, expected: 5016 },
+        { input: 789, expected: 8679 },
+        { input: 24, expected: 264 },
+        { input: 67, expected: 737 },
+        { input: 841, expected: 9251 },
+        { input: 847, expected: 9317 },
+        { input: 9999, expected: 109989 },
+        { input: 1234, expected: 13574 },
+        { input: 348, expected: 3828 },
+        { input: 5678, expected: 62458 }
+      ],
+      12: [
+        { input: 123, expected: 1476 },
+        { input: 456, expected: 5472 },
+        { input: 789, expected: 9468 },
+        { input: 24, expected: 288 },
+        { input: 67, expected: 804 },
+        { input: 841, expected: 10092 },
+        { input: 847, expected: 10164 },
+        { input: 9999, expected: 119988 },
+        { input: 1234, expected: 14808 },
+        { input: 5678, expected: 68136 }
+      ]
+    };
+
+    function runTests() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '';
+
+      let totalTests = 0;
+      let passedTests = 0;
+      let failedTests = 0;
+
+      // Test each multiplier
+      for (const [multiplier, cases] of Object.entries(testCases)) {
+        const rule = TrachtenbergRules[multiplier];
+        if (!rule) {
+          console.error(`No rule found for multiplier ${multiplier}`);
+          continue;
+        }
+
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'multiplier-section';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'multiplier-header';
+
+        let sectionPassed = 0;
+        let sectionFailed = 0;
+
+        // Test each case
+        const casesHtml = cases.map(testCase => {
+          totalTests++;
+          const { input, expected } = testCase;
+
+          // Run calculator
+          const calculatorResult = rule.calculate(input);
+          const calculatorMatch = calculatorResult === expected;
+
+          // Run procedure
+          let procedureResult = null;
+          let procedureMatch = false;
+          let procedureError = null;
+
+          try {
+            if (rule.showSteps) {
+              const { result } = rule.showSteps(input);
+              procedureResult = result;
+              procedureMatch = result === expected;
+            }
+          } catch (e) {
+            procedureError = e.message;
+          }
+
+          const testPassed = calculatorMatch && (procedureResult === null || procedureMatch);
+
+          if (testPassed) {
+            passedTests++;
+            sectionPassed++;
+          } else {
+            failedTests++;
+            sectionFailed++;
+          }
+
+          return `
+            <div class="test-case ${testPassed ? 'test-pass' : 'test-fail'}">
+              <strong>${input} × ${multiplier}</strong> = ${expected}
+              <br>
+              Calculator: ${calculatorResult} ${calculatorMatch ? '✓' : '✗'}
+              ${procedureResult !== null ? `
+                <br>Procedure: ${procedureResult} ${procedureMatch ? '✓' : '✗'}
+              ` : ''}
+              ${procedureError ? `<br><span class="text-error">Error: ${procedureError}</span>` : ''}
+              ${!testPassed ? `<br><span class="text-error">FAILED</span>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        headerDiv.innerHTML = `
+          <h2 style="font-weight: var(--font-normal); margin: 0;">Multiplier ×${multiplier}</h2>
+          <div>
+            <span class="text-success">${sectionPassed} passed</span> /
+            <span class="text-error">${sectionFailed} failed</span>
+          </div>
+        `;
+
+        sectionDiv.appendChild(headerDiv);
+        sectionDiv.innerHTML += casesHtml;
+        resultsDiv.appendChild(sectionDiv);
+      }
+
+      // Update summary
+      document.getElementById('total-tests').textContent = totalTests;
+      document.getElementById('passed-tests').textContent = passedTests;
+      document.getElementById('failed-tests').textContent = failedTests;
+
+      // Change color based on results
+      const failedElement = document.getElementById('failed-tests');
+      if (failedTests === 0) {
+        failedElement.classList.remove('text-error');
+        failedElement.classList.add('text-success');
+      } else {
+        failedElement.classList.remove('text-success');
+        failedElement.classList.add('text-error');
+      }
+    }
+
+    // Auto-run tests on load
+    window.addEventListener('DOMContentLoaded', runTests);
+  </script>
+</body>
+</html>

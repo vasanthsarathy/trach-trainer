@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TrachTrainer - Trachtenberg Speed Multiplication Practice</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="container">
+      <h1 class="app-title">TrachTrainer</h1>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" id="theme-toggle">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <button class="btn btn-outline btn-sm" id="rules-toggle">Rules</button>
+        <button class="btn btn-outline btn-sm" id="history-btn">History</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Rules Side Panel -->
+  <aside id="rules-panel" class="rules-panel">
+    <div class="rules-panel-header">
+      <h2 class="rules-panel-title">Trachtenberg Rules</h2>
+      <button class="btn btn-outline btn-sm" id="close-rules">Close</button>
+    </div>
+    <div class="rules-panel-content">
+      <!-- Rules will be populated dynamically by JavaScript -->
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <div class="container">
+
+      <!-- Session Setup Screen -->
+      <section id="setup-screen" class="screen active">
+        <div class="setup-container">
+          <h2 class="section-title">Configure Practice Session</h2>
+
+          <div class="card setup-card">
+            <div class="form-group">
+              <label class="form-label">Select Multipliers</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="5" checked>
+                  <span>×5</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="6" checked>
+                  <span>×6</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="7">
+                  <span>×7</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="9">
+                  <span>×9</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="11" checked>
+                  <span>×11</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="multiplier" value="12" checked>
+                  <span>×12</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="min-digits">Min Digits</label>
+                <input type="number" id="min-digits" class="input" min="2" max="6" value="3">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="max-digits">Max Digits</label>
+                <input type="number" id="max-digits" class="input" min="2" max="6" value="4">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Mode</label>
+              <div class="radio-group">
+                <label class="radio-item">
+                  <input type="radio" name="mode" value="easy" checked>
+                  <span>
+                    <strong>Easy</strong>
+                    <small>Per-digit inputs with carry slots and hints</small>
+                  </span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="mode" value="standard">
+                  <span>
+                    <strong>Standard</strong>
+                    <small>Per-digit inputs without carry UI</small>
+                  </span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="mode" value="hard">
+                  <span>
+                    <strong>Hard</strong>
+                    <small>Single input field, optional timer</small>
+                  </span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="mode" value="extreme">
+                  <span>
+                    <strong>Extreme</strong>
+                    <small>Problem hidden after brief display</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="problem-count">Number of Problems</label>
+              <input type="number" id="problem-count" class="input" min="5" max="100" value="10">
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary btn-lg" id="start-session-btn">Start Practice</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Screen -->
+      <section id="practice-screen" class="screen">
+        <div class="practice-container">
+          <div class="practice-header">
+            <div class="progress-info">
+              <span class="text-secondary">Problem <span id="current-problem">1</span> of <span id="total-problems">10</span></span>
+            </div>
+            <button class="btn btn-outline btn-sm" id="end-session-btn">End Session</button>
+          </div>
+
+          <div class="problem-display">
+            <div class="problem-operands font-mono" id="problem-operands">
+              <!-- Will be populated by JS -->
+            </div>
+
+            <div class="problem-hint text-secondary text-sm" id="problem-hint">
+              <!-- Hint text will appear here -->
+            </div>
+
+            <div id="answer-input-area">
+              <!-- Answer input UI will be generated based on mode -->
+            </div>
+
+            <div class="problem-actions">
+              <button class="btn btn-primary" id="submit-answer-btn">Submit Answer</button>
+            </div>
+          </div>
+
+          <!-- Feedback Display -->
+          <div id="feedback-display" class="feedback-display" style="display: none;">
+            <div class="card">
+              <div id="feedback-message" class="feedback-message">
+                <!-- Feedback will be shown here -->
+              </div>
+              <div class="feedback-actions">
+                <button class="btn btn-primary" id="next-problem-btn">Next Problem</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Session Complete Screen -->
+      <section id="complete-screen" class="screen">
+        <div class="complete-container">
+          <h2 class="section-title">Session Complete!</h2>
+
+          <div class="card stats-card">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value" id="stat-accuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="stat-correct">0</div>
+                <div class="stat-label">Correct</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="stat-avg-time">0s</div>
+                <div class="stat-label">Avg Time</div>
+              </div>
+            </div>
+
+            <div class="complete-actions">
+              <button class="btn btn-primary" id="new-session-btn">New Session</button>
+              <button class="btn btn-secondary" id="same-config-btn">Same Settings</button>
+              <button class="btn btn-outline" id="view-history-btn">View History</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Screen -->
+      <section id="history-screen" class="screen">
+        <div class="history-container">
+          <div class="screen-header">
+            <h2 class="section-title">Session History</h2>
+            <button class="btn btn-outline btn-sm" id="back-to-setup-btn">Back</button>
+          </div>
+
+          <div id="history-list" class="history-list">
+            <!-- History items will be populated by JS -->
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="utils.js"></script>
+  <script src="rules.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

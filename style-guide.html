@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrachTrainer - Style Guide</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: var(--space-12);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--border-medium);
+    }
+
+    .header h1 {
+      font-weight: var(--font-light);
+      font-size: var(--text-5xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .theme-toggle {
+      display: flex;
+      gap: var(--space-4);
+      margin-top: var(--space-6);
+    }
+
+    .section {
+      margin-bottom: var(--space-16);
+    }
+
+    .section h2 {
+      font-weight: var(--font-normal);
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-6);
+      color: var(--text-primary);
+    }
+
+    .section h3 {
+      font-weight: var(--font-normal);
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+      margin-top: var(--space-8);
+      color: var(--text-secondary);
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .color-swatch {
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .color-box {
+      height: 80px;
+      width: 100%;
+    }
+
+    .color-info {
+      padding: var(--space-4);
+      background-color: var(--bg-secondary);
+    }
+
+    .color-name {
+      font-weight: var(--font-normal);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-2);
+    }
+
+    .color-value {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    .typography-sample {
+      margin-bottom: var(--space-6);
+      padding: var(--space-4);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .input-group {
+      margin-bottom: var(--space-6);
+      max-width: 400px;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: var(--space-2);
+      font-weight: var(--font-normal);
+      font-size: var(--text-sm);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .digit-grid {
+      display: flex;
+      gap: var(--space-4);
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+    }
+
+    .problem-example {
+      text-align: center;
+      padding: var(--space-8);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-6);
+    }
+
+    .problem-operands {
+      font-family: var(--font-mono);
+      font-size: var(--text-4xl);
+      font-weight: var(--font-light);
+      margin-bottom: var(--space-6);
+    }
+
+    .spacing-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .spacing-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .spacing-box {
+      background-color: var(--color-blue);
+      height: 24px;
+    }
+
+    .spacing-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      min-width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>TrachTrainer Style Guide</h1>
+    <p class="text-secondary">A minimal, professional design system for mathematical practice</p>
+
+    <div class="theme-toggle">
+      <button class="btn btn-primary" onclick="setTheme('light')">Light Mode</button>
+      <button class="btn btn-secondary" onclick="setTheme('dark')">Dark Mode</button>
+    </div>
+  </div>
+
+  <!-- Colors Section -->
+  <section class="section">
+    <h2>Colors</h2>
+
+    <h3>Primary Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-blue);"></div>
+        <div class="color-info">
+          <div class="color-name">Blue</div>
+          <div class="color-value">--color-blue</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-blue-light);"></div>
+        <div class="color-info">
+          <div class="color-name">Blue Light</div>
+          <div class="color-value">--color-blue-light</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-blue-dark);"></div>
+        <div class="color-info">
+          <div class="color-name">Blue Dark</div>
+          <div class="color-value">--color-blue-dark</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-purple);"></div>
+        <div class="color-info">
+          <div class="color-name">Purple</div>
+          <div class="color-value">--color-purple</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-purple-light);"></div>
+        <div class="color-info">
+          <div class="color-name">Purple Light</div>
+          <div class="color-value">--color-purple-light</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-purple-dark);"></div>
+        <div class="color-info">
+          <div class="color-name">Purple Dark</div>
+          <div class="color-value">--color-purple-dark</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Semantic Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-success);"></div>
+        <div class="color-info">
+          <div class="color-name">Success</div>
+          <div class="color-value">--color-success</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-error);"></div>
+        <div class="color-info">
+          <div class="color-name">Error</div>
+          <div class="color-value">--color-error</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-warning);"></div>
+        <div class="color-info">
+          <div class="color-name">Warning</div>
+          <div class="color-value">--color-warning</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--color-info);"></div>
+        <div class="color-info">
+          <div class="color-name">Info</div>
+          <div class="color-value">--color-info</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Backgrounds & Text</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--bg-primary);"></div>
+        <div class="color-info">
+          <div class="color-name">Background Primary</div>
+          <div class="color-value">--bg-primary</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--bg-secondary);"></div>
+        <div class="color-info">
+          <div class="color-name">Background Secondary</div>
+          <div class="color-value">--bg-secondary</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background-color: var(--bg-tertiary);"></div>
+        <div class="color-info">
+          <div class="color-name">Background Tertiary</div>
+          <div class="color-value">--bg-tertiary</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Typography Section -->
+  <section class="section">
+    <h2>Typography</h2>
+
+    <h3>Font Weights</h3>
+    <div class="typography-sample text-thin">Thin (200) - The quick brown fox jumps over the lazy dog</div>
+    <div class="typography-sample text-light">Light (300) - The quick brown fox jumps over the lazy dog</div>
+    <div class="typography-sample text-normal">Normal (400) - The quick brown fox jumps over the lazy dog</div>
+    <div class="typography-sample text-medium">Medium (500) - The quick brown fox jumps over the lazy dog</div>
+    <div class="typography-sample text-semibold">Semibold (600) - The quick brown fox jumps over the lazy dog</div>
+
+    <h3>Font Sizes</h3>
+    <div class="typography-sample text-xs">Extra Small (12px) - The quick brown fox</div>
+    <div class="typography-sample text-sm">Small (14px) - The quick brown fox</div>
+    <div class="typography-sample text-base">Base (16px) - The quick brown fox</div>
+    <div class="typography-sample text-lg">Large (18px) - The quick brown fox</div>
+    <div class="typography-sample text-xl">XL (20px) - The quick brown fox</div>
+    <div class="typography-sample text-2xl">2XL (24px) - The quick brown fox</div>
+    <div class="typography-sample text-3xl">3XL (30px) - The quick brown fox</div>
+    <div class="typography-sample text-4xl">4XL (36px) - The quick brown fox</div>
+    <div class="typography-sample text-5xl">5XL (48px) - The quick brown</div>
+
+    <h3>Monospace Font (for Numbers)</h3>
+    <div class="typography-sample font-mono text-4xl">1234567890</div>
+    <div class="typography-sample font-mono text-2xl">348 × 11 = 3828</div>
+  </section>
+
+  <!-- Buttons Section -->
+  <section class="section">
+    <h2>Buttons</h2>
+
+    <div class="button-group">
+      <button class="btn btn-primary">Primary Button</button>
+      <button class="btn btn-secondary">Secondary Button</button>
+      <button class="btn btn-outline">Outline Button</button>
+    </div>
+
+    <h3>Button States</h3>
+    <div class="button-group">
+      <button class="btn btn-primary">Normal</button>
+      <button class="btn btn-primary" onmouseover="this.style.backgroundColor='var(--color-blue-light)'" onmouseout="this.style.backgroundColor='var(--color-blue)'">Hover (hover me)</button>
+      <button class="btn btn-primary" disabled style="opacity: 0.5; cursor: not-allowed;">Disabled</button>
+    </div>
+  </section>
+
+  <!-- Input Fields Section -->
+  <section class="section">
+    <h2>Input Fields</h2>
+
+    <div class="input-group">
+      <label class="input-label">Standard Input</label>
+      <input type="text" class="input" placeholder="Enter text here...">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Focused Input (click to focus)</label>
+      <input type="text" class="input" placeholder="Click to see focus state">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Number Input</label>
+      <input type="number" class="input" placeholder="123">
+    </div>
+  </section>
+
+  <!-- Cards Section -->
+  <section class="section">
+    <h2>Cards</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3 style="margin-bottom: var(--space-3);">Card Title</h3>
+        <p class="text-secondary">This is a card component with some sample content. Cards are used for grouping related information.</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: var(--space-3);">Session Stats</h3>
+        <p class="text-secondary">Accuracy: <span class="text-success text-semibold">95%</span></p>
+        <p class="text-secondary">Average Time: <span class="text-primary text-semibold">3.2s</span></p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: var(--space-3);">Problem Result</h3>
+        <p class="text-success">✓ Correct!</p>
+        <p class="text-secondary">Your answer: <span class="font-mono">3828</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem Display Section -->
+  <section class="section">
+    <h2>Problem Display Examples</h2>
+
+    <div class="problem-example">
+      <div class="problem-operands">348 × 11</div>
+      <div class="digit-grid">
+        <div class="digit-box">3</div>
+        <div class="digit-box">8</div>
+        <div class="digit-box">2</div>
+        <div class="digit-box">8</div>
+      </div>
+    </div>
+
+    <div class="problem-example">
+      <div class="problem-operands text-secondary">743 × 12</div>
+      <div class="digit-grid">
+        <input type="text" class="digit-box" maxlength="1" placeholder="?">
+        <input type="text" class="digit-box" maxlength="1" placeholder="?">
+        <input type="text" class="digit-box" maxlength="1" placeholder="?">
+        <input type="text" class="digit-box" maxlength="1" placeholder="?">
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacing Section -->
+  <section class="section">
+    <h2>Spacing Scale</h2>
+
+    <div class="spacing-demo">
+      <div class="spacing-item">
+        <div class="spacing-label">--space-1</div>
+        <div class="spacing-box" style="width: var(--space-1);"></div>
+        <span class="text-tertiary text-sm">4px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-2</div>
+        <div class="spacing-box" style="width: var(--space-2);"></div>
+        <span class="text-tertiary text-sm">8px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-3</div>
+        <div class="spacing-box" style="width: var(--space-3);"></div>
+        <span class="text-tertiary text-sm">12px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-4</div>
+        <div class="spacing-box" style="width: var(--space-4);"></div>
+        <span class="text-tertiary text-sm">16px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-6</div>
+        <div class="spacing-box" style="width: var(--space-6);"></div>
+        <span class="text-tertiary text-sm">24px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-8</div>
+        <div class="spacing-box" style="width: var(--space-8);"></div>
+        <span class="text-tertiary text-sm">32px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-12</div>
+        <div class="spacing-box" style="width: var(--space-12);"></div>
+        <span class="text-tertiary text-sm">48px</span>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-label">--space-16</div>
+        <div class="spacing-box" style="width: var(--space-16);"></div>
+        <span class="text-tertiary text-sm">64px</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Semantic Colors in Use -->
+  <section class="section">
+    <h2>Semantic Colors in Use</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <p class="text-success text-xl">✓ Correct Answer</p>
+        <p class="text-secondary">Your answer matches perfectly!</p>
+      </div>
+
+      <div class="card">
+        <p class="text-error text-xl">✗ Incorrect Answer</p>
+        <p class="text-secondary">Try again. Review the rule.</p>
+      </div>
+
+      <div class="card">
+        <p class="text-warning text-xl">⚠ Almost There</p>
+        <p class="text-secondary">Check your carry operations.</p>
+      </div>
+
+      <div class="card">
+        <p class="text-info text-xl">ⓘ Hint Available</p>
+        <p class="text-secondary">Click to see the rule reminder.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+      } else {
+        document.body.removeAttribute('data-theme');
+      }
+    }
+
+    // Detect system preference on load
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    }
+  </script>
+</body>
+</html>
