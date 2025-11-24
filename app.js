@@ -8,6 +8,7 @@ const App = {
   currentProblemIndex: 0,
   problemStartTime: null,
   sessionConfig: null,
+  extremeModeTimeout: null,
 
   init() {
     // Initialize theme
@@ -225,6 +226,19 @@ const App = {
     document.getElementById('feedback-display').style.display = 'none';
     document.getElementById('submit-answer-btn').style.display = 'block';
 
+    // Extreme mode: hide problem after brief delay
+    if (mode === 'extreme') {
+      // Clear any existing timeout
+      if (this.extremeModeTimeout) {
+        clearTimeout(this.extremeModeTimeout);
+      }
+
+      // Hide problem after 3 seconds
+      this.extremeModeTimeout = setTimeout(() => {
+        operandsDiv.style.display = 'none';
+      }, 3000);
+    }
+
     // Start timer
     this.problemStartTime = Date.now();
   },
@@ -349,11 +363,11 @@ const App = {
     let userAnswer;
     if (mode === 'easy' || mode === 'standard') {
       const inputs = document.querySelectorAll('.digit-input');
-      const digits = Array.from(inputs).map(input => input.value || '0');
+      const digits = Array.from(inputs).map(input => input.value);
       userAnswer = parseInt(digits.join(''));
     } else {
       const input = document.getElementById('single-answer');
-      userAnswer = parseInt(input.value) || 0;
+      userAnswer = parseInt(input.value.replace(/,/g, '')) || 0;
     }
 
     // Calculate time taken
