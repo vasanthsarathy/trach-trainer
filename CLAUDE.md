@@ -49,10 +49,74 @@ Sessions are saved and replayable with the same problem sequence.
 
 ## Architecture Notes
 
-(This section will be expanded as the codebase develops)
+The codebase follows a simple, modular JavaScript architecture:
+- **index.html**: Main structure with all screens (setup, practice, complete, history)
+- **app.js**: Application logic and state management
+- **rules.js**: Trachtenberg rule definitions and problem generation
+- **utils.js**: Helper functions, storage, theming, and UI utilities
+- **styles.css**: Minimal, clean styling with CSS variables
 
-The codebase does not yet exist. When implementing:
+Key points:
 - Focus on responsive webapp (desktop/tablet first)
 - Prioritize local session storage initially (cloud sync is future work)
 - Keep rule definitions modular and extensible
 - Structure to support future adaptive drill modes and difficulty scoring
+
+## Git Workflow and Issue Management
+
+### Committing Changes
+
+When committing changes to this repository:
+
+1. **Review changes first**: Always run `git status` and `git diff` to verify what's being committed
+2. **Check commit style**: Run `git log --oneline -5` to see recent commit message format
+3. **Write clear commit messages**: Follow the existing style - descriptive, present tense
+4. **Include co-authorship**: Add Claude Code attribution at the end:
+   ```
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   ```
+
+### Closing GitHub Issues
+
+**IMPORTANT**: To automatically close GitHub issues, each issue MUST have its own commit with a proper keyword reference.
+
+**Correct approach** - Create separate commits for each issue:
+```bash
+git commit -m "Fix extreme mode problem hiding
+
+Fixes #1
+
+Add timeout to hide problem after 3 seconds in extreme mode.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+**Incorrect approach** - Don't reference multiple issues in one commit:
+```bash
+# This does NOT work reliably:
+git commit -m "Fixes #1, #2, and #3"
+```
+
+**GitHub auto-close keywords** (use in commit message body):
+- `Fixes #123`
+- `Closes #123`
+- `Resolves #123`
+
+**Workflow for fixing multiple issues:**
+1. Make all code changes needed
+2. Create one comprehensive commit with all changes
+3. Create additional empty commits (using `--allow-empty`) for each issue:
+   ```bash
+   git commit --allow-empty -m "Fix [specific issue]
+
+   Fixes #2
+
+   [Brief description of what was fixed]"
+   ```
+4. Push all commits together: `git push`
+
+This ensures each issue gets properly linked and closed on GitHub.
