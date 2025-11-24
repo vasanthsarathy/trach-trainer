@@ -388,6 +388,133 @@ body {
   line-height: var(--leading-relaxed);
 }
 
+/* ===== NUMPAD PANEL ===== */
+
+.numpad-panel {
+  position: fixed;
+  top: 60px;
+  right: -280px;
+  width: 280px;
+  height: calc(100vh - 60px);
+  background-color: var(--bg-secondary);
+  border-left: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-lg);
+  transition: right var(--transition-base);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+}
+
+.numpad-panel.open {
+  right: 0;
+}
+
+.numpad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-medium);
+  background-color: var(--bg-primary);
+}
+
+.numpad-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.numpad-content {
+  padding: var(--space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.numpad-direction-toggle {
+  display: flex;
+  justify-content: center;
+}
+
+.numpad-direction-toggle .btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.numpad-direction-toggle .btn:hover {
+  background-color: var(--bg-primary);
+}
+
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.numpad-btn {
+  aspect-ratio: 1;
+  min-height: 60px;
+  font-size: var(--text-2xl);
+  font-family: var(--font-mono);
+  font-weight: var(--font-medium);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.numpad-btn:hover {
+  background-color: var(--bg-primary);
+  border-color: var(--border-dark);
+  transform: translateY(-1px);
+}
+
+.numpad-btn:active {
+  transform: translateY(0);
+  background-color: var(--color-blue);
+  color: white;
+}
+
+.numpad-btn-clear {
+  background-color: var(--color-orange);
+  color: white;
+  font-size: var(--text-xl);
+}
+
+.numpad-btn-clear:hover {
+  background-color: #e67700;
+}
+
+.numpad-btn-backspace {
+  background-color: var(--color-blue);
+  color: white;
+  font-size: var(--text-xl);
+}
+
+.numpad-btn-backspace:hover {
+  background-color: #0056b3;
+}
+
+/* Hide numpad on small screens */
+@media (max-width: 768px) {
+  .numpad-panel {
+    width: 100%;
+    right: -100%;
+  }
+}
+
 /* Header */
 .app-header {
   background-color: var(--bg-primary);

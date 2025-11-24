@@ -18,6 +18,7 @@
         <button class="btn btn-outline btn-sm" id="theme-toggle">
           <span id="theme-icon">🌙</span>
         </button>
+        <button class="btn btn-outline btn-sm" id="numpad-toggle-btn">Numpad</button>
         <button class="btn btn-outline btn-sm" id="rules-toggle">Rules</button>
         <button class="btn btn-outline btn-sm" id="history-btn">History</button>
       </div>
@@ -32,6 +33,38 @@
     </div>
     <div class="rules-panel-content">
       <!-- Rules will be populated dynamically by JavaScript -->
+    </div>
+  </aside>
+
+  <!-- Numpad Panel -->
+  <aside id="numpad-panel" class="numpad-panel">
+    <div class="numpad-header">
+      <h3 class="numpad-title">Numpad</h3>
+      <button class="btn btn-outline btn-sm" id="toggle-numpad">
+        <span id="numpad-toggle-icon">◀</span>
+      </button>
+    </div>
+    <div class="numpad-content">
+      <div class="numpad-direction-toggle">
+        <button class="btn btn-sm" id="direction-toggle">
+          <span id="direction-icon">←</span>
+          <span id="direction-text">R→L</span>
+        </button>
+      </div>
+      <div class="numpad-grid">
+        <button class="numpad-btn" data-value="7">7</button>
+        <button class="numpad-btn" data-value="8">8</button>
+        <button class="numpad-btn" data-value="9">9</button>
+        <button class="numpad-btn" data-value="4">4</button>
+        <button class="numpad-btn" data-value="5">5</button>
+        <button class="numpad-btn" data-value="6">6</button>
+        <button class="numpad-btn" data-value="1">1</button>
+        <button class="numpad-btn" data-value="2">2</button>
+        <button class="numpad-btn" data-value="3">3</button>
+        <button class="numpad-btn numpad-btn-clear" data-action="clear">C</button>
+        <button class="numpad-btn" data-value="0">0</button>
+        <button class="numpad-btn numpad-btn-backspace" data-action="backspace">⌫</button>
+      </div>
     </div>
   </aside>
 

@@ -17,6 +17,10 @@ const App = {
     // Populate rules panel
     RulesPanel.populate();
 
+    // Initialize numpad
+    Numpad.trackFocusedInput();
+    Numpad.open(); // Open numpad by default
+
     // Set up event listeners
     this.setupEventListeners();
 
@@ -37,6 +41,37 @@ const App = {
 
     document.getElementById('close-rules').addEventListener('click', () => {
       RulesPanel.close();
+    });
+
+    // Numpad toggle (header button)
+    document.getElementById('numpad-toggle-btn').addEventListener('click', () => {
+      Numpad.toggle();
+    });
+
+    // Numpad toggle (panel button)
+    document.getElementById('toggle-numpad').addEventListener('click', () => {
+      Numpad.toggle();
+    });
+
+    // Numpad direction toggle
+    document.getElementById('direction-toggle').addEventListener('click', () => {
+      Numpad.toggleDirection();
+    });
+
+    // Numpad button handlers
+    document.querySelectorAll('.numpad-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const value = e.target.dataset.value;
+        const action = e.target.dataset.action;
+
+        if (value) {
+          Numpad.handleDigitInput(value);
+        } else if (action === 'backspace') {
+          Numpad.handleBackspace();
+        } else if (action === 'clear') {
+          Numpad.handleClear();
+        }
+      });
     });
 
     // Setup screen
@@ -238,6 +273,11 @@ const App = {
         operandsDiv.style.display = 'none';
       }, 3000);
     }
+
+    // Initialize numpad focus for the new problem
+    setTimeout(() => {
+      Numpad.initializeFocus();
+    }, 100);
 
     // Start timer
     this.problemStartTime = Date.now();
