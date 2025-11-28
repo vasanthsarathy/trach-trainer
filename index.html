@@ -79,7 +79,14 @@
 
           <div class="card setup-card">
             <div class="form-group">
-              <label class="form-label">Select Multipliers</label>
+              <div class="form-label-with-actions">
+                <label class="form-label">Select Multipliers</label>
+                <div class="multiplier-actions">
+                  <button type="button" class="btn-link" id="select-all-multipliers">Select All</button>
+                  <span class="action-divider">•</span>
+                  <button type="button" class="btn-link" id="clear-all-multipliers">Clear</button>
+                </div>
+              </div>
               <div class="checkbox-grid">
                 <label class="checkbox-item">
                   <input type="checkbox" name="multiplier" value="5" checked>

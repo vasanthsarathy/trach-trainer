@@ -79,6 +79,19 @@ const App = {
       this.startSession();
     });
 
+    // Multiplier select all/clear buttons
+    document.getElementById('select-all-multipliers').addEventListener('click', () => {
+      document.querySelectorAll('input[name="multiplier"]').forEach(checkbox => {
+        checkbox.checked = true;
+      });
+    });
+
+    document.getElementById('clear-all-multipliers').addEventListener('click', () => {
+      document.querySelectorAll('input[name="multiplier"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    });
+
     // Practice screen
     document.getElementById('submit-answer-btn').addEventListener('click', () => {
       this.submitAnswer();

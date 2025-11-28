@@ -32,18 +32,36 @@
 - [ ] Implement normalized time tracking per difficulty level
 - [ ] Update session history to show difficulty-adjusted metrics
 
-## Priority 2: Quick Enhancement Wins
+## Priority 2: Quick Enhancement Wins ✓ COMPLETED
 
-### Issue #11: Select all/clear multipliers
-- [ ] Add "Select All" button to multiplier checkboxes
-- [ ] Add "Clear" button to deselect all multipliers
-- [ ] Position buttons logically near checkboxes
+### Issue #11: Select all/clear multipliers ✓
+- [x] Add "Select All" button to multiplier checkboxes
+- [x] Add "Clear" button to deselect all multipliers
+- [x] Position buttons logically near checkboxes
 
-### Issue #10: More compact, mathy UI design
-- [ ] Reduce padding/spacing throughout
-- [ ] Adjust typography for more "mathy" feel (monospace fonts, tighter spacing)
-- [ ] Review and simplify visual design
-- [ ] Maintain readability while increasing information density
+**Changes Made:**
+- Added HTML structure for Select All/Clear buttons (index.html:82-89)
+- Added CSS styling for btn-link and multiplier actions (styles.css:605-637)
+- Added event listeners in setupEventListeners (app.js:82-93)
+- Buttons styled as minimal links with bullet separator
+
+### Issue #10: More compact, mathy UI design ✓
+- [x] Reduce padding/spacing throughout
+- [x] Adjust typography for more "mathy" feel (monospace fonts, tighter spacing)
+- [x] Review and simplify visual design
+- [x] Maintain readability while increasing information density
+
+**Changes Made:**
+- Reduced card padding: 16px → 12px (styles.css:277)
+- Tightened form spacing: 12px → 8px margins (styles.css:594)
+- Made section titles smaller and more compact (styles.css:575-579)
+- Reduced digit boxes: 3rem width, 3.5rem height (styles.css:282-295)
+- Reduced input fields: 3rem width, 3.5rem height (styles.css:801-813)
+- Tightened checkbox grid gaps: 12px → 8px (styles.css:649)
+- Added monospace font to problem displays with letter-spacing (styles.css:754-760)
+- Changed font weights from light to medium for better readability
+- Reduced border radius throughout for tighter, technical look
+- Tightened digit-grid gaps: 16px → 8px (styles.css:785)
 
 ## Priority 3: Feature Enhancements
 
@@ -125,9 +143,33 @@
 - `app.js` - Added input validation (3 locations)
 - `styles.css` - Updated mobile media query for numpad
 
+### Phase 2 Completion Summary
+
+**Completed:** Issues #11 and #10 (Quick Enhancement Wins)
+
+**Issue #11: Select all/clear multipliers**
+- Added link-style buttons next to "Select Multipliers" label
+- Simple, clean design with bullet separator
+- Click handlers in setupEventListeners
+- Improves UX for quickly configuring practice sessions
+
+**Issue #10: Compact, mathy UI design**
+- Systematically reduced padding and spacing throughout
+- Changed typography to use monospace fonts for numbers
+- Tightened all grid gaps and margins
+- Used medium font weights instead of light for better readability at smaller sizes
+- Reduced border radius for more technical appearance
+- Significant information density improvement while maintaining readability
+
+**Files Modified:**
+- `index.html` - Added select all/clear buttons
+- `app.js` - Added event listeners
+- `styles.css` - Extensive spacing and typography updates (20+ locations)
+
 **Next Steps:**
-- Ready to move to Phase 2 (Quick Enhancement Wins)
-- Issues #11 and #10 are next in priority
+- Phase 1 & 2 complete!
+- Ready for Phase 3 (Medium Complexity Features)
+- Consider: Issue #13 (Scoring), Issue #6 (About page)
 
 
 ---
