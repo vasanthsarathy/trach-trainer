@@ -507,11 +507,14 @@ body {
   background-color: #0056b3;
 }
 
-/* Hide numpad on small screens */
+/* Hide numpad completely on mobile - use native keyboard instead */
 @media (max-width: 768px) {
   .numpad-panel {
-    width: 100%;
-    right: -100%;
+    display: none;
+  }
+
+  #numpad-toggle-btn {
+    display: none;
   }
 }
 

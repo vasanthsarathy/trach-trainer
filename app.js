@@ -329,6 +329,12 @@ const App = {
           carryInput.maxLength = 1;
           carryInput.dataset.carryIndex = i;
           carryInput.placeholder = '0';
+
+          // Only allow numeric input
+          carryInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+          });
+
           carryRow.appendChild(carryInput);
         }
 
@@ -357,6 +363,9 @@ const App = {
 
         // Auto-focus next input
         input.addEventListener('input', (e) => {
+          // Only allow numeric input
+          e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
           if (e.target.value && i < totalSlots - 1) {
             const nextInput = gridDiv.querySelector(`[data-digit-index="${i + 1}"]`);
             if (nextInput) nextInput.focus();
@@ -390,6 +399,12 @@ const App = {
       input.className = 'input single-answer-input';
       input.id = 'single-answer';
       input.placeholder = 'Enter answer';
+
+      // Only allow numeric input (and commas for formatting)
+      input.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9,]/g, '');
+      });
+
       inputArea.appendChild(input);
       input.focus();
     }
