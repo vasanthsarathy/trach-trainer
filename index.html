@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Header -->
@@ -74,101 +74,103 @@
 
       <!-- Session Setup Screen -->
       <section id="setup-screen" class="screen active">
-        <div class="setup-container">
-          <h2 class="section-title">Configure Practice Session</h2>
+        <div class="setup-layout">
+          <!-- Left Sidebar -->
+          <aside class="setup-sidebar">
+            <h2 class="section-title">Configure Session</h2>
 
-          <div class="card setup-card">
-            <div class="form-group">
-              <div class="form-label-with-actions">
-                <label class="form-label">Select Multipliers</label>
-                <div class="multiplier-actions">
-                  <button type="button" class="btn-link" id="select-all-multipliers">Select All</button>
-                  <span class="action-divider">•</span>
-                  <button type="button" class="btn-link" id="clear-all-multipliers">Clear</button>
+            <!-- Quick Start Presets -->
+            <div class="preset-buttons">
+              <button type="button" class="btn-preset" data-preset="beginner">Beginner</button>
+              <button type="button" class="btn-preset" data-preset="intermediate">Intermediate</button>
+              <button type="button" class="btn-preset" data-preset="advanced">Advanced</button>
+            </div>
+
+            <div class="card setup-card">
+              <div class="form-group">
+                <div class="form-label-with-actions">
+                  <label class="form-label">Multipliers</label>
+                  <div class="multiplier-actions">
+                    <button type="button" class="btn-link" id="select-all-multipliers">All</button>
+                    <span class="action-divider">•</span>
+                    <button type="button" class="btn-link" id="clear-all-multipliers">Clear</button>
+                  </div>
+                </div>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="5" checked>
+                    <span>×5</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="6" checked>
+                    <span>×6</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="7">
+                    <span>×7</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="9">
+                    <span>×9</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="11" checked>
+                    <span>×11</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="multiplier" value="12" checked>
+                    <span>×12</span>
+                  </label>
                 </div>
               </div>
-              <div class="checkbox-grid">
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="5" checked>
-                  <span>×5</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="6" checked>
-                  <span>×6</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="7">
-                  <span>×7</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="9">
-                  <span>×9</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="11" checked>
-                  <span>×11</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="multiplier" value="12" checked>
-                  <span>×12</span>
-                </label>
-              </div>
-            </div>
 
-            <div class="form-row">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="min-digits">Min Digits</label>
+                  <input type="number" id="min-digits" class="input" min="2" max="6" value="3">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="max-digits">Max Digits</label>
+                  <input type="number" id="max-digits" class="input" min="2" max="6" value="4">
+                </div>
+              </div>
+
               <div class="form-group">
-                <label class="form-label" for="min-digits">Min Digits</label>
-                <input type="number" id="min-digits" class="input" min="2" max="6" value="3">
+                <label class="form-label">Mode</label>
+                <div class="radio-group-compact">
+                  <label class="radio-item-compact" data-tooltip="Per-digit inputs with carry slots and hints">
+                    <input type="radio" name="mode" value="easy" checked>
+                    <span>Easy</span>
+                  </label>
+                  <label class="radio-item-compact" data-tooltip="Per-digit inputs without carry UI">
+                    <input type="radio" name="mode" value="standard">
+                    <span>Standard</span>
+                  </label>
+                  <label class="radio-item-compact" data-tooltip="Single input field, optional timer">
+                    <input type="radio" name="mode" value="hard">
+                    <span>Hard</span>
+                  </label>
+                  <label class="radio-item-compact" data-tooltip="Problem hidden after brief display">
+                    <input type="radio" name="mode" value="extreme">
+                    <span>Extreme</span>
+                  </label>
+                </div>
               </div>
+
               <div class="form-group">
-                <label class="form-label" for="max-digits">Max Digits</label>
-                <input type="number" id="max-digits" class="input" min="2" max="6" value="4">
+                <label class="form-label" for="problem-count">Problems</label>
+                <input type="number" id="problem-count" class="input" min="5" max="100" value="10">
               </div>
             </div>
+          </aside>
 
-            <div class="form-group">
-              <label class="form-label">Mode</label>
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input type="radio" name="mode" value="easy" checked>
-                  <span>
-                    <strong>Easy</strong>
-                    <small>Per-digit inputs with carry slots and hints</small>
-                  </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="mode" value="standard">
-                  <span>
-                    <strong>Standard</strong>
-                    <small>Per-digit inputs without carry UI</small>
-                  </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="mode" value="hard">
-                  <span>
-                    <strong>Hard</strong>
-                    <small>Single input field, optional timer</small>
-                  </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="mode" value="extreme">
-                  <span>
-                    <strong>Extreme</strong>
-                    <small>Problem hidden after brief display</small>
-                  </span>
-                </label>
-              </div>
+          <!-- Main Area (Right Side) -->
+          <main class="setup-main">
+            <div class="start-button-area">
+              <button class="btn btn-primary btn-xl" id="start-session-btn">Start Practice</button>
+              <p class="keyboard-hint">or press <kbd>Space</kbd></p>
             </div>
-
-            <div class="form-group">
-              <label class="form-label" for="problem-count">Number of Problems</label>
-              <input type="number" id="problem-count" class="input" min="5" max="100" value="10">
-            </div>
-
-            <div class="form-actions">
-              <button class="btn btn-primary btn-lg" id="start-session-btn">Start Practice</button>
-            </div>
-          </div>
+          </main>
         </div>
       </section>
 

@@ -2,6 +2,31 @@
  * TrachTrainer - Main Application Logic
  */
 
+// Preset configurations
+const PRESETS = {
+  beginner: {
+    multipliers: [5, 11, 12],
+    minDigits: 3,
+    maxDigits: 4,
+    mode: 'easy',
+    problemCount: 10
+  },
+  intermediate: {
+    multipliers: [5, 6, 11, 12],
+    minDigits: 4,
+    maxDigits: 5,
+    mode: 'standard',
+    problemCount: 15
+  },
+  advanced: {
+    multipliers: [5, 6, 7, 9, 11, 12],
+    minDigits: 5,
+    maxDigits: 6,
+    mode: 'hard',
+    problemCount: 20
+  }
+};
+
 // Application State
 const App = {
   currentSession: null,
@@ -92,6 +117,18 @@ const App = {
       });
     });
 
+    // Preset button handlers
+    document.querySelectorAll('.btn-preset').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const presetName = e.target.dataset.preset;
+        this.applyPreset(presetName);
+
+        // Visual feedback
+        document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+      });
+    });
+
     // Practice screen
     document.getElementById('submit-answer-btn').addEventListener('click', () => {
       this.submitAnswer();
@@ -132,8 +169,27 @@ const App = {
     });
 
     // Enter key on answer inputs
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && Screen.current() === 'practice-screen') {
+      const currentScreen = Screen.current();
+
+      // Space bar to start session (only on setup screen)
+      if (e.code === 'Space' && currentScreen === 'setup-screen') {
+        e.preventDefault();
+
+        const activeElement = document.activeElement;
+        const isInputField = activeElement && (
+          activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA'
+        );
+
+        if (!isInputField) {
+          this.startSession();
+        }
+      }
+
+      // Enter key on practice screen
+      if (e.key === 'Enter' && currentScreen === 'practice-screen') {
         const feedbackVisible = document.getElementById('feedback-display').style.display !== 'none';
         if (feedbackVisible) {
           this.nextProblem();
@@ -207,6 +263,28 @@ const App = {
       mode,
       problemCount
     };
+  },
+
+  applyPreset(presetName) {
+    const preset = PRESETS[presetName];
+    if (!preset) return;
+
+    // Set multipliers
+    document.querySelectorAll('input[name="multiplier"]').forEach(checkbox => {
+      checkbox.checked = preset.multipliers.includes(parseInt(checkbox.value));
+    });
+
+    // Set digit range
+    document.getElementById('min-digits').value = preset.minDigits;
+    document.getElementById('max-digits').value = preset.maxDigits;
+
+    // Set mode
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+      radio.checked = radio.value === preset.mode;
+    });
+
+    // Set problem count
+    document.getElementById('problem-count').value = preset.problemCount;
   },
 
   showProblem() {
@@ -374,22 +452,22 @@ const App = {
         input.maxLength = 1;
         input.dataset.digitIndex = i;
 
-        // Auto-focus next input
+        // Auto-focus to left (Trachtenberg works right-to-left)
         input.addEventListener('input', (e) => {
           // Only allow numeric input
           e.target.value = e.target.value.replace(/[^0-9]/g, '');
 
-          if (e.target.value && i < totalSlots - 1) {
-            const nextInput = gridDiv.querySelector(`[data-digit-index="${i + 1}"]`);
-            if (nextInput) nextInput.focus();
+          if (e.target.value && i > 0) {
+            const prevInput = gridDiv.querySelector(`[data-digit-index="${i - 1}"]`);
+            if (prevInput) prevInput.focus();
           }
         });
 
-        // Backspace to previous input
+        // Backspace to right
         input.addEventListener('keydown', (e) => {
-          if (e.key === 'Backspace' && !e.target.value && i > 0) {
-            const prevInput = gridDiv.querySelector(`[data-digit-index="${i - 1}"]`);
-            if (prevInput) prevInput.focus();
+          if (e.key === 'Backspace' && !e.target.value && i < totalSlots - 1) {
+            const nextInput = gridDiv.querySelector(`[data-digit-index="${i + 1}"]`);
+            if (nextInput) nextInput.focus();
           }
         });
 
