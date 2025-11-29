@@ -930,7 +930,7 @@ const App = {
                 <span>${formatDuration(problem.timeTaken || 0)}</span>
               </div>
             </div>
-            <button class="btn btn-sm btn-outline" onclick="App.toggleSolution(${session.id}, ${index})">
+            <button class="btn btn-sm btn-outline" onclick="App.toggleSolution(event, '${session.id}', ${index})">
               Show Solution
             </button>
             <div class="problem-solution" id="solution-${session.id}-${index}" style="display: none;">
@@ -942,7 +942,7 @@ const App = {
     `;
   },
 
-  toggleSolution(sessionId, problemIndex) {
+  toggleSolution(event, sessionId, problemIndex) {
     const solutionDiv = document.getElementById(`solution-${sessionId}-${problemIndex}`);
     const btn = event.target;
 
