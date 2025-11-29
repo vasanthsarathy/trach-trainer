@@ -168,6 +168,15 @@ const App = {
       Screen.show('setup-screen');
     });
 
+    // About screen
+    document.getElementById('about-btn').addEventListener('click', () => {
+      Screen.show('about-screen');
+    });
+
+    document.getElementById('about-back-btn').addEventListener('click', () => {
+      Screen.show('setup-screen');
+    });
+
     // Enter key on answer inputs
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
