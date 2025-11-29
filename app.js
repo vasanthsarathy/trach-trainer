@@ -849,14 +849,16 @@ const App = {
         </div>
       `;
     } else {
-      historyList.innerHTML = sessions.map(session => {
+      historyList.innerHTML = sessions.map((session, index) => {
         const stats = this.calculateStatsForSession(session);
         const date = formatDate(session.startTime);
         const multipliers = session.config.multipliers.map(m => '×' + m).join(', ');
+        const tierInfo = session.config.targetTier ? `Tier ${session.config.targetTier}` :
+                        `${session.config.minDigits}-${session.config.maxDigits} digits`;
 
         return `
-          <div class="history-item">
-            <div class="history-item-header">
+          <div class="history-item" data-session-index="${index}">
+            <div class="history-item-header" onclick="App.toggleSessionDetails(${index})">
               <div class="history-date">${date}</div>
               <div class="history-stats">
                 <span class="${stats.accuracy >= 80 ? 'text-success' : 'text-secondary'}">
@@ -869,9 +871,13 @@ const App = {
                   ${formatDuration(stats.avgTime)} avg
                 </span>
               </div>
+              <button class="history-expand-btn" aria-label="Expand details">▼</button>
             </div>
             <div class="history-config">
-              ${multipliers} • ${session.config.minDigits}-${session.config.maxDigits} digits • ${session.config.mode} mode
+              ${multipliers} • ${tierInfo} • ${session.config.mode} mode
+            </div>
+            <div class="history-details" id="history-details-${index}" style="display: none;">
+              ${this.renderSessionProblems(session)}
             </div>
           </div>
         `;
@@ -879,6 +885,103 @@ const App = {
     }
 
     Screen.show('history-screen');
+  },
+
+  toggleSessionDetails(sessionIndex) {
+    const detailsDiv = document.getElementById(`history-details-${sessionIndex}`);
+    const expandBtn = document.querySelector(`[data-session-index="${sessionIndex}"] .history-expand-btn`);
+
+    if (detailsDiv.style.display === 'none') {
+      detailsDiv.style.display = 'block';
+      expandBtn.textContent = '▲';
+      expandBtn.setAttribute('aria-label', 'Collapse details');
+    } else {
+      detailsDiv.style.display = 'none';
+      expandBtn.textContent = '▼';
+      expandBtn.setAttribute('aria-label', 'Expand details');
+    }
+  },
+
+  renderSessionProblems(session) {
+    return `
+      <div class="session-problems">
+        ${session.problems.map((problem, index) => `
+          <div class="problem-review">
+            <div class="problem-review-header">
+              <div class="problem-review-number">#${index + 1}</div>
+              <div class="problem-review-problem">${problem.operand1} × ${problem.operand2}</div>
+              <div class="problem-review-status ${problem.isCorrect ? 'correct' : 'incorrect'}">
+                ${problem.isCorrect ? '✓' : '✗'}
+              </div>
+            </div>
+            <div class="problem-review-answers">
+              <div class="problem-review-answer">
+                <span class="label">Your answer:</span>
+                <span class="${problem.isCorrect ? 'correct' : 'incorrect'}">${problem.userAnswer || '(skipped)'}</span>
+              </div>
+              ${!problem.isCorrect ? `
+                <div class="problem-review-answer">
+                  <span class="label">Correct answer:</span>
+                  <span class="correct">${problem.correctAnswer}</span>
+                </div>
+              ` : ''}
+              <div class="problem-review-time">
+                <span class="label">Time:</span>
+                <span>${formatDuration(problem.timeTaken || 0)}</span>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline" onclick="App.toggleSolution(${session.id}, ${index})">
+              Show Solution
+            </button>
+            <div class="problem-solution" id="solution-${session.id}-${index}" style="display: none;">
+              ${this.renderProblemSolution(problem)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  },
+
+  toggleSolution(sessionId, problemIndex) {
+    const solutionDiv = document.getElementById(`solution-${sessionId}-${problemIndex}`);
+    const btn = event.target;
+
+    if (solutionDiv.style.display === 'none') {
+      solutionDiv.style.display = 'block';
+      btn.textContent = 'Hide Solution';
+    } else {
+      solutionDiv.style.display = 'none';
+      btn.textContent = 'Show Solution';
+    }
+  },
+
+  renderProblemSolution(problem) {
+    const rule = TrachtenbergRules[problem.operand2];
+    if (!rule) return '<p>Solution not available</p>';
+
+    const { steps } = rule.showSteps(problem.operand1);
+
+    return `
+      <div class="solution-steps">
+        <h4>Trachtenberg Method: ${rule.name}</h4>
+        <p class="solution-hint">${rule.hint}</p>
+        <div class="solution-steps-list">
+          ${steps.map((step, index) => `
+            <div class="solution-step">
+              <div class="solution-step-number">Step ${index + 1}</div>
+              <div class="solution-step-calc">${step.calculation}</div>
+              <div class="solution-step-result">
+                Digit: <strong>${step.digit}</strong>
+                ${step.newCarry > 0 ? `, Carry: ${step.newCarry}` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="solution-final">
+          Final answer: <strong>${problem.correctAnswer}</strong>
+        </div>
+      </div>
+    `;
   },
 
   calculateStatsForSession(session) {
