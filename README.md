@@ -8,36 +8,66 @@ The Trachtenberg System is a mental math technique that allows you to multiply l
 
 ## Features
 
+- **🎓 Tutorial Mode (NEW!)**
+  - **Complete learning journey** from beginner to advanced
+  - **10 sequential lessons** covering all multipliers (×11 → ×12 → ×6 → ×7 → ×5 → ×8 → ×9 → ×4 → ×2 → ×3)
+  - **4-phase structure** per lesson:
+    - Introduction (understand the "why")
+    - Theory (learn the rule with examples)
+    - Guided Practice (step-by-step prompts)
+    - Independent Practice (demonstrate mastery)
+  - **Automatic unlocking** - complete one lesson to unlock the next
+  - **Progress tracking** - picks up where you left off
+
 - **Multiple Practice Modes**
   - **Easy**: Per-digit input fields with carry slots and rule hints
   - **Standard**: Per-digit fields without carry UI, optional hints
   - **Hard**: Single answer input field
   - **Extreme**: Problem shown briefly then hidden, answer from memory
 
+- **Difficulty Tiers**
+  - **10 tiers** of difficulty based on problem complexity
+  - **Smart problem generation** - practice specific difficulty levels
+  - **Live preview** - see example problems before starting a session
+
 - **Customizable Sessions**
   - Select which multipliers to practice (×2, ×3, ×4, ×5, ×6, ×7, ×8, ×9, ×11, ×12)
-  - Choose digit range (2-6 digits)
+  - Choose target tier (automatically sets appropriate digit counts)
   - Set number of problems per session
 
 - **Interactive Learning**
   - Step-by-step feedback showing Trachtenberg rule application
   - Built-in rules reference panel
-  - Session history with accuracy tracking
+  - Detailed session history with problem-by-problem review
+  - Progress tracking across all lessons
 
 - **Clean, Minimal Interface**
   - Dark/light theme toggle
   - Keyboard-friendly navigation
   - Mobile-responsive design
+  - Optional on-screen numpad
 
 ## Getting Started
 
-### Quick Start
+### For Complete Beginners
+
+**Start with Tutorial Mode!**
+
+1. Open `index.html` in your web browser
+2. Click the **Tutorial** button in the header
+3. Start with **×11: Add the Neighbor** (the easiest lesson)
+4. Progress through all 4 phases of the lesson
+5. Complete the lesson to unlock **×12**, then continue through the curriculum
+
+The tutorial will guide you step-by-step from zero knowledge to mastering all 10 Trachtenberg multipliers.
+
+### For Practice Sessions
 
 1. Open `index.html` in your web browser
 2. Configure your practice session:
    - Select multipliers to practice
-   - Set digit range (min and max)
-   - Choose difficulty mode
+   - Choose target tier (1-10)
+   - Select difficulty mode (Easy/Standard/Hard/Extreme)
    - Set number of problems
 3. Click "Start Practice"
 4. Enter your answers digit-by-digit (Easy/Standard) or as a full number (Hard/Extreme)
@@ -98,13 +128,16 @@ Your practice sessions are automatically saved in browser localStorage. View you
 
 ```
 trach-trainer/
-├── index.html          # Main HTML structure
-├── styles.css          # All styling and design system
-├── app.js              # Main application logic
-├── rules.js            # Trachtenberg rules and problem generation
-├── utils.js            # Helper functions and utilities
-├── CLAUDE.md           # Project instructions for AI assistants
-└── README.md           # This file
+├── index.html              # Main HTML structure
+├── styles.css              # All styling and design system
+├── app.js                  # Main application logic
+├── rules.js                # Trachtenberg rules and problem generation
+├── utils.js                # Helper functions and utilities
+├── tutorial-content.js     # Tutorial lesson content (all 10 multipliers)
+├── tutorial-manager.js     # Tutorial state management and progression
+├── tutorial-ui.js          # Tutorial rendering and UI logic
+├── CLAUDE.md               # Project instructions for AI assistants
+└── README.md               # This file
 ```
 
 ### No Build Process Required
@@ -219,12 +252,14 @@ Quick reference (see Rules panel in app for details):
 
 ## Tips for Learning
 
-1. **Start with Easy Mode** - Get comfortable with the rules using hints and carry slots
-2. **Master one multiplier at a time** - Focus on ×2 or ×11 first (easiest), then ×12, ×3, ×5, etc.
-3. **Use 3-digit numbers initially** - Build confidence before moving to larger numbers
-4. **Reference the Rules panel** - Keep it open while learning
-5. **Progress gradually** - Move to Standard mode once you're comfortable, then Hard
-6. **Track your progress** - Review your session history to see improvement
+1. **Start with Tutorial Mode** - The best way to learn! Complete all 10 lessons in order for a structured learning experience
+2. **Follow the curriculum** - Tutorial lessons are ordered by difficulty: ×11 → ×12 → ×6 → ×7 → ×5 → ×8 → ×9 → ×4 → ×2 → ×3
+3. **Complete each phase** - Don't skip ahead; each phase (Intro → Theory → Guided → Independent) builds on the previous
+4. **Use Practice Mode after learning** - Once you've completed tutorial lessons, use Practice Mode to build speed and accuracy
+5. **Start with Easy Mode** - When practicing, get comfortable with the rules using hints and carry slots
+6. **Reference the Rules panel** - Keep it open while learning or practicing
+7. **Progress gradually** - Move to Standard mode once comfortable, then Hard, then Extreme
+8. **Track your progress** - Review session history to see improvement over time
 
 ## Contributing
 

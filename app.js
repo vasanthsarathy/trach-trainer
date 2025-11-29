@@ -21,6 +21,9 @@ const App = {
     Numpad.trackFocusedInput();
     Numpad.open(); // Open numpad by default
 
+    // Initialize tutorial manager
+    TutorialManager.init();
+
     // Set up event listeners
     this.setupEventListeners();
 
@@ -175,6 +178,19 @@ const App = {
 
     document.getElementById('progress-back-btn').addEventListener('click', () => {
       Screen.show('setup-screen');
+    });
+
+    // Tutorial screens
+    document.getElementById('tutorial-btn').addEventListener('click', () => {
+      TutorialUI.renderOverview();
+    });
+
+    document.getElementById('tutorial-overview-back-btn').addEventListener('click', () => {
+      Screen.show('setup-screen');
+    });
+
+    document.getElementById('exit-tutorial').addEventListener('click', () => {
+      TutorialManager.returnToOverview();
     });
 
     // Enter key on answer inputs
