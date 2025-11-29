@@ -601,16 +601,82 @@ const ProblemGenerator = {
   },
 
   /**
+   * Generate a single problem for a specific tier
+   */
+  generateForTier(multiplier, targetTier, maxAttempts = 50) {
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      // Try digit counts from 2-6
+      const digitCount = randomInt(2, 6);
+      const operand1 = generateNumber(digitCount);
+
+      // Calculate partial difficulty
+      const partialDifficulty = DifficultyCalculator.calculatePartial(operand1, multiplier);
+
+      // Get the actual steps to determine carries
+      const rule = TrachtenbergRules[multiplier];
+      const { steps } = rule.showSteps(operand1);
+
+      // Finalize difficulty with carry info
+      DifficultyCalculator.addCarryInfo(partialDifficulty, steps);
+
+      // Check if this problem is in the target tier
+      if (partialDifficulty.tier === targetTier) {
+        const correctAnswer = rule.calculate(operand1);
+
+        return {
+          id: generateId(),
+          operand1,
+          operand2: multiplier,
+          correctAnswer,
+          rule: rule.name,
+          hint: rule.hint,
+          userAnswer: null,
+          isCorrect: null,
+          timeTaken: null,
+          difficulty: partialDifficulty
+        };
+      }
+
+      attempts++;
+    }
+
+    // If we couldn't find a problem in the exact tier after maxAttempts,
+    // generate one anyway and accept it (fallback)
+    const digitCount = randomInt(2, 6);
+    const operand1 = generateNumber(digitCount);
+    const rule = TrachtenbergRules[multiplier];
+    const { steps } = rule.showSteps(operand1);
+    const difficulty = DifficultyCalculator.calculatePartial(operand1, multiplier);
+    DifficultyCalculator.addCarryInfo(difficulty, steps);
+    const correctAnswer = rule.calculate(operand1);
+
+    return {
+      id: generateId(),
+      operand1,
+      operand2: multiplier,
+      correctAnswer,
+      rule: rule.name,
+      hint: rule.hint,
+      userAnswer: null,
+      isCorrect: null,
+      timeTaken: null,
+      difficulty
+    };
+  },
+
+  /**
    * Generate a set of problems for a session
    */
   generateSet(config) {
-    const { multipliers, minDigits, maxDigits, problemCount } = config;
+    const { multipliers, targetTier, problemCount } = config;
     const problems = [];
 
     for (let i = 0; i < problemCount; i++) {
       // Pick random multiplier from selected ones
       const multiplier = multipliers[randomInt(0, multipliers.length - 1)];
-      const problem = this.generate(multiplier, minDigits, maxDigits);
+      const problem = this.generateForTier(multiplier, targetTier);
       problems.push(problem);
     }
 

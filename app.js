@@ -2,31 +2,6 @@
  * TrachTrainer - Main Application Logic
  */
 
-// Preset configurations
-const PRESETS = {
-  beginner: {
-    multipliers: [5, 11, 12],
-    minDigits: 3,
-    maxDigits: 4,
-    mode: 'easy',
-    problemCount: 10
-  },
-  intermediate: {
-    multipliers: [5, 6, 11, 12],
-    minDigits: 4,
-    maxDigits: 5,
-    mode: 'standard',
-    problemCount: 15
-  },
-  advanced: {
-    multipliers: [5, 6, 7, 9, 11, 12],
-    minDigits: 5,
-    maxDigits: 6,
-    mode: 'hard',
-    problemCount: 20
-  }
-};
-
 // Application State
 const App = {
   currentSession: null,
@@ -117,17 +92,33 @@ const App = {
       });
     });
 
-    // Preset button handlers
-    document.querySelectorAll('.btn-preset').forEach(btn => {
+    // Tier selection handlers
+    document.querySelectorAll('.btn-tier').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const presetName = e.target.dataset.preset;
-        this.applyPreset(presetName);
+        const tier = parseInt(e.target.dataset.tier);
 
         // Visual feedback
-        document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.btn-tier').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
+
+        // Update tier description and preview
+        this.updateTierDescription(tier);
+        this.updateTierPreview();
       });
     });
+
+    // Update preview when multipliers change
+    document.querySelectorAll('input[name="multiplier"]').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        this.updateTierPreview();
+      });
+    });
+
+    // Set default tier to 5
+    const defaultTierBtn = document.querySelector('.btn-tier[data-tier="5"]');
+    if (defaultTierBtn) {
+      defaultTierBtn.click();
+    }
 
     // Practice screen
     document.getElementById('submit-answer-btn').addEventListener('click', () => {
@@ -228,8 +219,8 @@ const App = {
       return;
     }
 
-    if (config.minDigits > config.maxDigits) {
-      alert('Min digits cannot be greater than max digits');
+    if (!config.targetTier || config.targetTier < 1 || config.targetTier > 10) {
+      alert('Please select a target tier (1-10)');
       return;
     }
 
@@ -263,9 +254,9 @@ const App = {
     const multiplierCheckboxes = document.querySelectorAll('input[name="multiplier"]:checked');
     const multipliers = Array.from(multiplierCheckboxes).map(cb => parseInt(cb.value));
 
-    // Get digit range
-    const minDigits = parseInt(document.getElementById('min-digits').value);
-    const maxDigits = parseInt(document.getElementById('max-digits').value);
+    // Get selected tier
+    const selectedTierBtn = document.querySelector('.btn-tier.active');
+    const targetTier = selectedTierBtn ? parseInt(selectedTierBtn.dataset.tier) : 5;
 
     // Get mode
     const modeRadio = document.querySelector('input[name="mode"]:checked');
@@ -276,33 +267,77 @@ const App = {
 
     return {
       multipliers,
-      minDigits,
-      maxDigits,
+      targetTier,
       mode,
       problemCount
     };
   },
 
-  applyPreset(presetName) {
-    const preset = PRESETS[presetName];
-    if (!preset) return;
+  updateTierDescription(tier) {
+    const descriptions = {
+      1: 'Tier 1 - Beginner: Easiest problems, perfect for learning the basics',
+      2: 'Tier 2 - Easy: Simple problems with smaller numbers',
+      3: 'Tier 3 - Basic: Building confidence with straightforward calculations',
+      4: 'Tier 4 - Developing: Moderate difficulty, good for practice',
+      5: 'Tier 5 - Intermediate: Balanced challenge for regular practice',
+      6: 'Tier 6 - Moderate: Requires solid understanding of the rules',
+      7: 'Tier 7 - Challenging: Complex problems for experienced users',
+      8: 'Tier 8 - Advanced: High difficulty, tests your mastery',
+      9: 'Tier 9 - Expert: Very challenging, near-master level',
+      10: 'Tier 10 - Master: Ultimate challenge, hardest problems'
+    };
 
-    // Set multipliers
-    document.querySelectorAll('input[name="multiplier"]').forEach(checkbox => {
-      checkbox.checked = preset.multipliers.includes(parseInt(checkbox.value));
-    });
+    const descElement = document.getElementById('tier-description');
+    if (descElement) {
+      descElement.textContent = descriptions[tier] || 'Select a tier to practice';
+    }
+  },
 
-    // Set digit range
-    document.getElementById('min-digits').value = preset.minDigits;
-    document.getElementById('max-digits').value = preset.maxDigits;
+  updateTierPreview() {
+    const selectedTierBtn = document.querySelector('.btn-tier.active');
+    const tier = selectedTierBtn ? parseInt(selectedTierBtn.dataset.tier) : null;
 
-    // Set mode
-    document.querySelectorAll('input[name="mode"]').forEach(radio => {
-      radio.checked = radio.value === preset.mode;
-    });
+    const multiplierCheckboxes = document.querySelectorAll('input[name="multiplier"]:checked');
+    const multipliers = Array.from(multiplierCheckboxes).map(cb => parseInt(cb.value));
 
-    // Set problem count
-    document.getElementById('problem-count').value = preset.problemCount;
+    const examplesDiv = document.getElementById('tier-examples');
+
+    if (!tier || multipliers.length === 0) {
+      examplesDiv.innerHTML = '<p style="margin: 0;">Select a tier and at least one multiplier to see examples</p>';
+      return;
+    }
+
+    // Generate 3-4 example problems for the selected tier and multipliers
+    const examples = [];
+    const maxExamples = Math.min(4, multipliers.length);
+
+    for (let i = 0; i < maxExamples; i++) {
+      const multiplier = multipliers[i % multipliers.length];
+      try {
+        const problem = ProblemGenerator.generateForTier(multiplier, tier, 20);
+        examples.push({
+          problem: `${problem.operand1} × ${problem.operand2}`,
+          answer: problem.correctAnswer,
+          digits: String(problem.operand1).length,
+          multiplier: problem.operand2
+        });
+      } catch (e) {
+        // If we can't generate a problem for this multiplier/tier combo, skip it
+        continue;
+      }
+    }
+
+    if (examples.length === 0) {
+      examplesDiv.innerHTML = '<p style="margin: 0;">No problems available for this tier with selected multipliers. Try a different tier or select different multipliers.</p>';
+      return;
+    }
+
+    examplesDiv.innerHTML = examples.map(ex => `
+      <div class="tier-example">
+        <span class="tier-example-problem">${ex.problem}</span>
+        <span class="tier-example-answer">${ex.digits}-digit → ${ex.answer}</span>
+      </div>
+    `).join('');
   },
 
   showProblem() {

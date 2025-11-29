@@ -81,11 +81,31 @@
           <aside class="setup-sidebar">
             <h2 class="section-title">Configure Session</h2>
 
-            <!-- Quick Start Presets -->
-            <div class="preset-buttons">
-              <button type="button" class="btn-preset" data-preset="beginner">Beginner</button>
-              <button type="button" class="btn-preset" data-preset="intermediate">Intermediate</button>
-              <button type="button" class="btn-preset" data-preset="advanced">Advanced</button>
+            <!-- Tier Selection -->
+            <div class="form-group">
+              <label class="form-label">Target Tier</label>
+              <div class="tier-selector">
+                <button type="button" class="btn-tier" data-tier="1">1</button>
+                <button type="button" class="btn-tier" data-tier="2">2</button>
+                <button type="button" class="btn-tier" data-tier="3">3</button>
+                <button type="button" class="btn-tier" data-tier="4">4</button>
+                <button type="button" class="btn-tier" data-tier="5">5</button>
+                <button type="button" class="btn-tier" data-tier="6">6</button>
+                <button type="button" class="btn-tier" data-tier="7">7</button>
+                <button type="button" class="btn-tier" data-tier="8">8</button>
+                <button type="button" class="btn-tier" data-tier="9">9</button>
+                <button type="button" class="btn-tier" data-tier="10">10</button>
+              </div>
+              <p class="tier-description" id="tier-description">Select a tier to practice problems at that difficulty level</p>
+            </div>
+
+            <!-- Tier Preview -->
+            <div class="tier-preview card" id="tier-preview">
+              <h3 class="tier-preview-title">Example Problems</h3>
+              <div class="tier-examples" id="tier-examples">
+                Select a tier and multipliers to see example problems
+              </div>
+              <p class="tier-preview-hint">Problems will use your selected multipliers below</p>
             </div>
 
             <div class="card setup-card">
@@ -142,16 +162,6 @@
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="min-digits">Min Digits</label>
-                  <input type="number" id="min-digits" class="input" min="2" max="6" value="3">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="max-digits">Max Digits</label>
-                  <input type="number" id="max-digits" class="input" min="2" max="6" value="4">
-                </div>
-              </div>
 
               <div class="form-group">
                 <label class="form-label">Mode</label>
