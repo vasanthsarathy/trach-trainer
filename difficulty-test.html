@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrachTrainer - Difficulty System Test Harness</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: #00ff00;
+      border-bottom: 2px solid #00ff00;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #00ccff;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      color: #ffcc00;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .test-section {
+      background: #0a0a0a;
+      border: 1px solid #333;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .pass {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .fail {
+      color: #ff0000;
+      font-weight: bold;
+    }
+
+    .warn {
+      color: #ffcc00;
+      font-weight: bold;
+    }
+
+    .info {
+      color: #00ccff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #222;
+      color: #00ff00;
+    }
+
+    tr:nth-child(even) {
+      background: #111;
+    }
+
+    button {
+      background: #00ff00;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 5px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    button:hover {
+      background: #00cc00;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: #0a0a0a;
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00ff00;
+    }
+
+    .stat-label {
+      color: #888;
+      margin-top: 5px;
+    }
+
+    .chart {
+      margin: 20px 0;
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+
+    .bar-label {
+      width: 100px;
+      color: #00ccff;
+    }
+
+    .bar-visual {
+      flex: 1;
+      height: 20px;
+      background: #222;
+      border: 1px solid #333;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #00ff00;
+      transition: width 0.3s;
+    }
+
+    .bar-value {
+      width: 80px;
+      text-align: right;
+      color: #00ff00;
+    }
+
+    .tier-1 { background-color: #d4edda; color: #155724; }
+    .tier-2 { background-color: #d4edda; color: #155724; }
+    .tier-3 { background-color: #d1ecf1; color: #0c5460; }
+    .tier-4 { background-color: #d1ecf1; color: #0c5460; }
+    .tier-5 { background-color: #fff3cd; color: #856404; }
+    .tier-6 { background-color: #fff3cd; color: #856404; }
+    .tier-7 { background-color: #f8d7da; color: #721c24; }
+    .tier-8 { background-color: #f8d7da; color: #721c24; }
+    .tier-9 { background-color: #e2d9f3; color: #5a3d7a; }
+    .tier-10 { background-color: #e2d9f3; color: #5a3d7a; }
+
+    #output {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 TrachTrainer Difficulty System Test Harness</h1>
+
+  <div class="test-section">
+    <button onclick="runAllTests()">▶ Run All Tests</button>
+    <button onclick="runTest1()">Test 1: Score Calculation</button>
+    <button onclick="runTest2()">Test 2: Tier Distribution</button>
+    <button onclick="runTest3()">Test 3: Progression Paths</button>
+    <button onclick="runTest4()">Test 4: Edge Cases</button>
+    <button onclick="clearOutput()">Clear Output</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="utils.js"></script>
+  <script src="rules.js"></script>
+  <script>
+    // Test Harness
+    const TestHarness = {
+      output: [],
+
+      log(message, type = 'info') {
+        const colors = {
+          pass: 'pass',
+          fail: 'fail',
+          warn: 'warn',
+          info: 'info'
+        };
+        this.output.push({ message, type: colors[type] || 'info' });
+        this.render();
+      },
+
+      clear() {
+        this.output = [];
+        this.render();
+      },
+
+      render() {
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = this.output.map(item =>
+          `<div class="${item.type}">${item.message}</div>`
+        ).join('');
+      },
+
+      assert(condition, message) {
+        if (condition) {
+          this.log(`✓ ${message}`, 'pass');
+          return true;
+        } else {
+          this.log(`✗ ${message}`, 'fail');
+          return false;
+        }
+      }
+    };
+
+    // Test 1: Score Calculation Verification
+    function runTest1() {
+      TestHarness.log('\n========================================', 'info');
+      TestHarness.log('TEST 1: SCORE CALCULATION VERIFICATION', 'info');
+      TestHarness.log('========================================\n', 'info');
+
+      const testCases = [
+        // Easy problems (Tier 1-2)
+        { operand1: 12, operand2: 11, expectedMinScore: 50, expectedMaxScore: 60, expectedTier: 1, label: "12 × 11" },
+        { operand1: 123, operand2: 11, expectedMinScore: 70, expectedMaxScore: 85, expectedTier: 1, label: "123 × 11" },
+        { operand1: 1234, operand2: 11, expectedMinScore: 85, expectedMaxScore: 115, expectedTier: [1, 2, 3], label: "1234 × 11" },
+        { operand1: 123, operand2: 12, expectedMinScore: 95, expectedMaxScore: 125, expectedTier: [2, 3], label: "123 × 12" },
+
+        // Medium problems (Tier 4-6)
+        { operand1: 1234, operand2: 5, expectedMinScore: 150, expectedMaxScore: 200, expectedTier: [4, 5], label: "1234 × 5" },
+        { operand1: 12345, operand2: 6, expectedMinScore: 195, expectedMaxScore: 250, expectedTier: [5, 6], label: "12345 × 6" },
+        { operand1: 123, operand2: 7, expectedMinScore: 210, expectedMaxScore: 260, expectedTier: [5, 6], label: "123 × 7" },
+
+        // Hard problems (Tier 7-10)
+        { operand1: 12345, operand2: 7, expectedMinScore: 240, expectedMaxScore: 310, expectedTier: [6, 7], label: "12345 × 7" },
+        { operand1: 123, operand2: 9, expectedMinScore: 285, expectedMaxScore: 345, expectedTier: [7, 8], label: "123 × 9" },
+        { operand1: 1234, operand2: 9, expectedMinScore: 305, expectedMaxScore: 370, expectedTier: [8, 9], label: "1234 × 9" },
+        { operand1: 123456, operand2: 9, expectedMinScore: 335, expectedMaxScore: 440, expectedTier: [8, 9, 10], label: "123456 × 9" }
+      ];
+
+      let passed = 0;
+      let failed = 0;
+
+      TestHarness.log('Running score calculation tests...\n', 'info');
+
+      testCases.forEach(test => {
+        const difficulty = DifficultyCalculator.calculatePartial(test.operand1, test.operand2);
+
+        // Get actual steps to calculate carries
+        const rule = TrachtenbergRules[test.operand2];
+        const steps = rule.showSteps(test.operand1);
+        DifficultyCalculator.addCarryInfo(difficulty, steps.steps);
+
+        const score = difficulty.score;
+        const tier = difficulty.tier;
+        const tierLabel = difficulty.tierLabel;
+
+        const scoreInRange = score >= test.expectedMinScore && score <= test.expectedMaxScore;
+        const tierMatches = Array.isArray(test.expectedTier)
+          ? test.expectedTier.includes(tier)
+          : tier === test.expectedTier;
+
+        const breakdown = difficulty.breakdown;
+        const result = `${test.label}: Score=${score} (M:${breakdown.multiplierScore} + D:${breakdown.digitScore} + C:${breakdown.carryScore}), Tier ${tier} (${tierLabel})`;
+
+        if (scoreInRange && tierMatches) {
+          TestHarness.log(`✓ ${result}`, 'pass');
+          passed++;
+        } else {
+          TestHarness.log(`✗ ${result} [Expected score: ${test.expectedMinScore}-${test.expectedMaxScore}, tier: ${test.expectedTier}]`, 'fail');
+          failed++;
+        }
+      });
+
+      TestHarness.log(`\nTest 1 Results: ${passed} passed, ${failed} failed`, passed === testCases.length ? 'pass' : 'warn');
+    }
+
+    // Test 2: Tier Distribution Analysis
+    function runTest2() {
+      TestHarness.log('\n========================================', 'info');
+      TestHarness.log('TEST 2: TIER DISTRIBUTION ANALYSIS', 'info');
+      TestHarness.log('========================================\n', 'info');
+
+      const multipliers = [5, 6, 7, 9, 11, 12];
+      const digitCounts = [2, 3, 4, 5, 6];
+      const samplesPerConfig = 50; // Generate multiple samples for each config
+
+      const tierCounts = {};
+      const tierProblems = {}; // Store example problems for each tier
+      for (let i = 1; i <= 10; i++) {
+        tierCounts[i] = 0;
+        tierProblems[i] = [];
+      }
+
+      let totalProblems = 0;
+
+      TestHarness.log('Generating problem set across all configurations...\n', 'info');
+
+      multipliers.forEach(mult => {
+        digitCounts.forEach(digits => {
+          for (let sample = 0; sample < samplesPerConfig; sample++) {
+            // Generate random number with specified digits
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            const operand1 = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            const difficulty = DifficultyCalculator.calculatePartial(operand1, mult);
+            const rule = TrachtenbergRules[mult];
+            const steps = rule.showSteps(operand1);
+            DifficultyCalculator.addCarryInfo(difficulty, steps.steps);
+
+            const tier = difficulty.tier;
+            tierCounts[tier]++;
+
+            // Store example problem (only first 3 per tier)
+            if (tierProblems[tier].length < 3) {
+              tierProblems[tier].push({
+                problem: `${operand1} × ${mult}`,
+                score: difficulty.score,
+                breakdown: difficulty.breakdown
+              });
+            }
+
+            totalProblems++;
+          }
+        });
+      });
+
+      TestHarness.log(`Total problems generated: ${totalProblems}\n`, 'info');
+      TestHarness.log('Tier Distribution:', 'info');
+      TestHarness.log('─────────────────────────────────────────────────────────────────', 'info');
+
+      for (let tier = 1; tier <= 10; tier++) {
+        const count = tierCounts[tier];
+        const percentage = ((count / totalProblems) * 100).toFixed(1);
+        const barLength = Math.round(percentage);
+        const bar = '█'.repeat(barLength);
+        const tierLabel = DifficultyCalculator.TIER_LABELS[tier];
+
+        const status = percentage < 5 ? 'warn' : (percentage > 25 ? 'warn' : 'pass');
+        TestHarness.log(`Tier ${tier.toString().padStart(2)} (${tierLabel.padEnd(12)}): ${bar} ${percentage}% (${count} problems)`, status);
+
+        // Show example problems
+        if (tierProblems[tier].length > 0) {
+          tierProblems[tier].forEach(ex => {
+            const b = ex.breakdown;
+            TestHarness.log(`    Example: ${ex.problem.padEnd(15)} Score=${ex.score} (M:${b.multiplierScore}, D:${b.digitScore}, C:${b.carryScore})`, 'info');
+          });
+        }
+      }
+
+      TestHarness.log('\n─────────────────────────────────────────────────────────────────', 'info');
+
+      // Validation
+      let hasDeadZones = false;
+      let hasOverpopulated = false;
+
+      for (let tier = 1; tier <= 10; tier++) {
+        const percentage = (tierCounts[tier] / totalProblems) * 100;
+        if (percentage < 5) {
+          TestHarness.log(`⚠ Tier ${tier} is underpopulated (${percentage.toFixed(1)}%)`, 'warn');
+          hasDeadZones = true;
+        }
+        if (percentage > 25) {
+          TestHarness.log(`⚠ Tier ${tier} is overpopulated (${percentage.toFixed(1)}%)`, 'warn');
+          hasOverpopulated = true;
+        }
+      }
+
+      if (!hasDeadZones && !hasOverpopulated) {
+        TestHarness.log('\n✓ Tier distribution is balanced!', 'pass');
+      } else {
+        TestHarness.log('\n✗ Tier distribution has issues', 'fail');
+      }
+    }
+
+    // Test 3: Progression Path Analysis
+    function runTest3() {
+      TestHarness.log('\n========================================', 'info');
+      TestHarness.log('TEST 3: PROGRESSION PATH ANALYSIS', 'info');
+      TestHarness.log('========================================\n', 'info');
+
+      const progressionPaths = [
+        {
+          name: "Beginner Path (×11 only)",
+          path: [
+            { mult: 11, digits: 2 },
+            { mult: 11, digits: 3 },
+            { mult: 11, digits: 4 },
+            { mult: 11, digits: 5 },
+            { mult: 11, digits: 6 }
+          ]
+        },
+        {
+          name: "Easy Multipliers (×11, ×12)",
+          path: [
+            { mult: 11, digits: 3 },
+            { mult: 12, digits: 3 },
+            { mult: 11, digits: 4 },
+            { mult: 12, digits: 4 },
+            { mult: 11, digits: 5 }
+          ]
+        },
+        {
+          name: "Intermediate Path (×5, ×6)",
+          path: [
+            { mult: 5, digits: 2 },
+            { mult: 5, digits: 3 },
+            { mult: 6, digits: 3 },
+            { mult: 5, digits: 4 },
+            { mult: 6, digits: 4 }
+          ]
+        },
+        {
+          name: "Advanced Path (×7, ×9)",
+          path: [
+            { mult: 7, digits: 2 },
+            { mult: 7, digits: 3 },
+            { mult: 9, digits: 2 },
+            { mult: 7, digits: 4 },
+            { mult: 9, digits: 3 },
+            { mult: 9, digits: 4 }
+          ]
+        },
+        {
+          name: "Master Path (×9 progression)",
+          path: [
+            { mult: 9, digits: 3 },
+            { mult: 9, digits: 4 },
+            { mult: 9, digits: 5 },
+            { mult: 9, digits: 6 }
+          ]
+        }
+      ];
+
+      progressionPaths.forEach(pathData => {
+        TestHarness.log(`\n${pathData.name}:`, 'info');
+        TestHarness.log('─────────────────────────────────────────', 'info');
+
+        const tierProgression = [];
+
+        pathData.path.forEach(step => {
+          // Generate sample problem
+          const min = Math.pow(10, step.digits - 1);
+          const max = Math.pow(10, step.digits) - 1;
+          const operand1 = Math.floor(Math.random() * (max - min + 1)) + min;
+
+          const difficulty = DifficultyCalculator.calculatePartial(operand1, step.mult);
+          const rule = TrachtenbergRules[step.mult];
+          const steps = rule.showSteps(operand1);
+          DifficultyCalculator.addCarryInfo(difficulty, steps.steps);
+
+          tierProgression.push(difficulty.tier);
+
+          TestHarness.log(`  ${step.digits}-digit × ${step.mult}: Tier ${difficulty.tier} (${difficulty.tierLabel}) - Score ${difficulty.score}`, 'info');
+        });
+
+        // Check if progression is smooth (no huge jumps)
+        let hasLargeJump = false;
+        for (let i = 1; i < tierProgression.length; i++) {
+          const jump = Math.abs(tierProgression[i] - tierProgression[i - 1]);
+          if (jump > 3) {
+            hasLargeJump = true;
+            TestHarness.log(`  ⚠ Large tier jump detected: ${tierProgression[i - 1]} → ${tierProgression[i]}`, 'warn');
+          }
+        }
+
+        if (!hasLargeJump) {
+          TestHarness.log(`  ✓ Smooth progression (tier range: ${Math.min(...tierProgression)} → ${Math.max(...tierProgression)})`, 'pass');
+        }
+      });
+    }
+
+    // Test 4: Edge Cases and Boundaries
+    function runTest4() {
+      TestHarness.log('\n========================================', 'info');
+      TestHarness.log('TEST 4: EDGE CASES AND BOUNDARIES', 'info');
+      TestHarness.log('========================================\n', 'info');
+
+      // Test tier boundaries
+      TestHarness.log('Testing Tier Boundaries:', 'info');
+      TestHarness.log('─────────────────────────────────────────', 'info');
+
+      const boundaries = [0, 80, 110, 140, 180, 220, 260, 310, 360, 410, 999];
+
+      boundaries.forEach((boundary, i) => {
+        if (i === 0 || i === boundaries.length - 1) return; // Skip first and last
+
+        const testScores = [boundary - 1, boundary, boundary + 1];
+        const expectedTiers = [i, i, i + 1];
+
+        testScores.forEach((score, j) => {
+          const tier = DifficultyCalculator.getTierFromScore(score);
+          const expected = expectedTiers[j];
+          const match = tier === expected;
+
+          TestHarness.log(
+            `  Score ${score}: Tier ${tier} ${match ? '✓' : '✗ (expected ' + expected + ')'}`,
+            match ? 'pass' : 'fail'
+          );
+        });
+      });
+
+      // Test extreme problems
+      TestHarness.log('\n\nTesting Extreme Problems:', 'info');
+      TestHarness.log('─────────────────────────────────────────', 'info');
+
+      // Minimum difficulty
+      const minDiff = DifficultyCalculator.calculatePartial(10, 11);
+      const minRule = TrachtenbergRules[11];
+      const minSteps = minRule.showSteps(10);
+      DifficultyCalculator.addCarryInfo(minDiff, minSteps.steps);
+      TestHarness.log(`  Minimum: 10 × 11 = Score ${minDiff.score}, Tier ${minDiff.tier} (${minDiff.tierLabel})`,
+        minDiff.tier === 1 ? 'pass' : 'fail');
+
+      // Maximum difficulty
+      const maxDiff = DifficultyCalculator.calculatePartial(999999, 9);
+      const maxRule = TrachtenbergRules[9];
+      const maxSteps = maxRule.showSteps(999999);
+      DifficultyCalculator.addCarryInfo(maxDiff, maxSteps.steps);
+      TestHarness.log(`  Maximum: 999999 × 9 = Score ${maxDiff.score}, Tier ${maxDiff.tier} (${maxDiff.tierLabel})`,
+        maxDiff.tier === 10 ? 'pass' : 'warn');
+
+      // Test zero carries vs max carries for same multiplier/digit combo
+      TestHarness.log('\n\nTesting Carry Impact:', 'info');
+      TestHarness.log('─────────────────────────────────────────', 'info');
+
+      // Low carry example
+      const lowCarryDiff = DifficultyCalculator.calculatePartial(1111, 11);
+      const lowCarrySteps = TrachtenbergRules[11].showSteps(1111);
+      DifficultyCalculator.addCarryInfo(lowCarryDiff, lowCarrySteps.steps);
+
+      // High carry example
+      const highCarryDiff = DifficultyCalculator.calculatePartial(9999, 11);
+      const highCarrySteps = TrachtenbergRules[11].showSteps(9999);
+      DifficultyCalculator.addCarryInfo(highCarryDiff, highCarrySteps.steps);
+
+      TestHarness.log(`  Low carries:  1111 × 11 = ${lowCarryDiff.breakdown.carryCount} carries, Score ${lowCarryDiff.score}, Tier ${lowCarryDiff.tier}`, 'info');
+      TestHarness.log(`  High carries: 9999 × 11 = ${highCarryDiff.breakdown.carryCount} carries, Score ${highCarryDiff.score}, Tier ${highCarryDiff.tier}`, 'info');
+
+      const carryImpact = highCarryDiff.score - lowCarryDiff.score;
+      TestHarness.log(`  Carry impact: ${carryImpact} points difference`, carryImpact > 0 ? 'pass' : 'warn');
+    }
+
+    // Run all tests
+    function runAllTests() {
+      TestHarness.clear();
+      TestHarness.log('════════════════════════════════════════════════════════════════', 'info');
+      TestHarness.log('   TRACHTTRAINER DIFFICULTY SYSTEM - COMPREHENSIVE TEST SUITE', 'info');
+      TestHarness.log('════════════════════════════════════════════════════════════════', 'info');
+
+      runTest1();
+      runTest2();
+      runTest3();
+      runTest4();
+
+      TestHarness.log('\n\n════════════════════════════════════════════════════════════════', 'info');
+      TestHarness.log('   ALL TESTS COMPLETE', 'info');
+      TestHarness.log('════════════════════════════════════════════════════════════════', 'info');
+    }
+
+    function clearOutput() {
+      TestHarness.clear();
+    }
+
+    // Auto-run on page load
+    window.addEventListener('load', () => {
+      TestHarness.log('Test harness loaded. Click "Run All Tests" to begin.', 'info');
+    });
+  </script>
+</body>
+</html>

@@ -316,6 +316,254 @@ const TrachtenbergRules = {
 
       return { steps, result: digitsToNumber(resultDigits) };
     }
+  },
+
+  /**
+   * Multiply by 2
+   * Rule: Double each digit (no neighbor)
+   */
+  2: {
+    name: '×2',
+    hint: 'Double each digit',
+    calculate(num) {
+      return num * 2;
+    },
+    showSteps(num) {
+      const digits = [0, ...numberToDigits(num)];
+      const steps = [];
+      const resultDigits = [];
+      let carry = 0;
+
+      // Process RIGHT to LEFT
+      for (let i = digits.length - 1; i >= 0; i--) {
+        const current = digits[i];
+        const sum = (2 * current) + carry;
+        const digit = sum % 10;
+        const newCarry = Math.floor(sum / 10);
+
+        steps.push({
+          position: digits.length - i - 1,
+          calculation: `2×${current}${carry > 0 ? ' + ' + carry : ''} = ${sum}`,
+          digit,
+          newCarry
+        });
+
+        resultDigits.unshift(digit);
+        carry = newCarry;
+      }
+
+      // Handle final carry
+      if (carry > 0) {
+        resultDigits.unshift(carry);
+      }
+
+      // Remove leading zeros
+      while (resultDigits.length > 1 && resultDigits[0] === 0) {
+        resultDigits.shift();
+      }
+
+      return { steps, result: digitsToNumber(resultDigits) };
+    }
+  },
+
+  /**
+   * Multiply by 3
+   * Rule: Rightmost: subtract from 10, double, add 5 if odd
+   *       Middle: subtract from 9, double, add 5 if odd, add half of neighbor
+   *       Leftmost: half of digit minus 2
+   */
+  3: {
+    name: '×3',
+    hint: 'Subtract from 10 (rightmost) or 9 (middle), double, add 5 if odd, add half neighbor',
+    calculate(num) {
+      return num * 3;
+    },
+    showSteps(num) {
+      const digits = numberToDigits(num);
+      const steps = [];
+      const resultDigits = [];
+      let carry = 0;
+
+      // Process RIGHT to LEFT
+      for (let i = digits.length - 1; i >= 0; i--) {
+        const current = digits[i];
+        const neighbor = i < digits.length - 1 ? digits[i + 1] : 0;
+        const halfNeighbor = Math.floor(neighbor / 2);
+        const addFive = current % 2 === 1 ? 5 : 0;
+
+        let sum;
+        if (i === digits.length - 1) {
+          // Rightmost: (10 - digit) × 2 + 5 if odd
+          sum = (10 - current) * 2 + addFive + carry;
+        } else {
+          // Middle: (9 - digit) × 2 + 5 if odd + half neighbor
+          sum = (9 - current) * 2 + addFive + halfNeighbor + carry;
+        }
+
+        const digit = sum % 10;
+        const newCarry = Math.floor(sum / 10);
+
+        steps.push({
+          position: digits.length - i - 1,
+          calculation: i === digits.length - 1
+            ? `(10 - ${current})×2 + ${addFive}${carry > 0 ? ' + ' + carry : ''} = ${sum}`
+            : `(9 - ${current})×2 + ${addFive} + ⌊${neighbor}/2⌋${carry > 0 ? ' + ' + carry : ''} = ${sum}`,
+          digit,
+          newCarry
+        });
+
+        resultDigits.unshift(digit);
+        carry = newCarry;
+      }
+
+      // Leftmost: half of first digit - 2
+      const leftmostValue = Math.floor(digits[0] / 2) - 2 + carry;
+      steps.push({
+        position: digits.length,
+        calculation: `⌊${digits[0]}/2⌋ - 2${carry > 0 ? ' + ' + carry : ''} = ${leftmostValue}`,
+        digit: leftmostValue,
+        newCarry: 0
+      });
+
+      if (leftmostValue > 0) {
+        resultDigits.unshift(leftmostValue);
+      }
+
+      return { steps, result: digitsToNumber(resultDigits) };
+    }
+  },
+
+  /**
+   * Multiply by 4
+   * Rule: Like ×9, but use half the neighbor instead of full neighbor
+   *       Rightmost: subtract from 10, add 5 if odd
+   *       Middle: subtract from 9, add half neighbor, add 5 if odd
+   *       Leftmost: half of digit minus 1
+   */
+  4: {
+    name: '×4',
+    hint: 'Subtract from 10 (rightmost) or 9 (middle), add ⌊neighbor/2⌋, add 5 if odd',
+    calculate(num) {
+      return num * 4;
+    },
+    showSteps(num) {
+      const digits = numberToDigits(num);
+      const steps = [];
+      const resultDigits = [];
+      let carry = 0;
+
+      // Process RIGHT to LEFT
+      for (let i = digits.length - 1; i >= 0; i--) {
+        const current = digits[i];
+        const neighbor = i < digits.length - 1 ? digits[i + 1] : 0;
+        const halfNeighbor = Math.floor(neighbor / 2);
+        const addFive = current % 2 === 1 ? 5 : 0;
+
+        let sum;
+        if (i === digits.length - 1) {
+          // Rightmost: (10 - digit) + 5 if odd
+          sum = (10 - current) + addFive + carry;
+        } else {
+          // Middle: (9 - digit) + half neighbor + 5 if odd
+          sum = (9 - current) + halfNeighbor + addFive + carry;
+        }
+
+        const digit = sum % 10;
+        const newCarry = Math.floor(sum / 10);
+
+        steps.push({
+          position: digits.length - i - 1,
+          calculation: i === digits.length - 1
+            ? `(10 - ${current}) + ${addFive}${carry > 0 ? ' + ' + carry : ''} = ${sum}`
+            : `(9 - ${current}) + ⌊${neighbor}/2⌋ + ${addFive}${carry > 0 ? ' + ' + carry : ''} = ${sum}`,
+          digit,
+          newCarry
+        });
+
+        resultDigits.unshift(digit);
+        carry = newCarry;
+      }
+
+      // Leftmost: half of first digit - 1
+      const leftmostValue = Math.floor(digits[0] / 2) - 1 + carry;
+      steps.push({
+        position: digits.length,
+        calculation: `⌊${digits[0]}/2⌋ - 1${carry > 0 ? ' + ' + carry : ''} = ${leftmostValue}`,
+        digit: leftmostValue,
+        newCarry: 0
+      });
+
+      if (leftmostValue > 0) {
+        resultDigits.unshift(leftmostValue);
+      }
+
+      return { steps, result: digitsToNumber(resultDigits) };
+    }
+  },
+
+  /**
+   * Multiply by 8
+   * Rule: Rightmost: subtract from 10, double
+   *       Middle: subtract from 9, double, add neighbor
+   *       Leftmost: digit minus 2
+   */
+  8: {
+    name: '×8',
+    hint: 'Subtract from 10 (rightmost) or 9 (middle), double, add neighbor',
+    calculate(num) {
+      return num * 8;
+    },
+    showSteps(num) {
+      const digits = numberToDigits(num);
+      const steps = [];
+      const resultDigits = [];
+      let carry = 0;
+
+      // Process RIGHT to LEFT
+      for (let i = digits.length - 1; i >= 0; i--) {
+        const current = digits[i];
+        const neighbor = i < digits.length - 1 ? digits[i + 1] : 0;
+
+        let sum;
+        if (i === digits.length - 1) {
+          // Rightmost: (10 - digit) × 2
+          sum = (10 - current) * 2 + carry;
+        } else {
+          // Middle: (9 - digit) × 2 + neighbor
+          sum = (9 - current) * 2 + neighbor + carry;
+        }
+
+        const digit = sum % 10;
+        const newCarry = Math.floor(sum / 10);
+
+        steps.push({
+          position: digits.length - i - 1,
+          calculation: i === digits.length - 1
+            ? `(10 - ${current})×2${carry > 0 ? ' + ' + carry : ''} = ${sum}`
+            : `(9 - ${current})×2 + ${neighbor}${carry > 0 ? ' + ' + carry : ''} = ${sum}`,
+          digit,
+          newCarry
+        });
+
+        resultDigits.unshift(digit);
+        carry = newCarry;
+      }
+
+      // Leftmost: digit - 2
+      const leftmostValue = digits[0] - 2 + carry;
+      steps.push({
+        position: digits.length,
+        calculation: `${digits[0]} - 2${carry > 0 ? ' + ' + carry : ''} = ${leftmostValue}`,
+        digit: leftmostValue,
+        newCarry: 0
+      });
+
+      if (leftmostValue > 0) {
+        resultDigits.unshift(leftmostValue);
+      }
+
+      return { steps, result: digitsToNumber(resultDigits) };
+    }
   }
 };
 
@@ -347,7 +595,8 @@ const ProblemGenerator = {
       hint: rule.hint,
       userAnswer: null,
       isCorrect: null,
-      timeTaken: null
+      timeTaken: null,
+      difficulty: DifficultyCalculator.calculatePartial(operand1, operand2)
     };
   },
 

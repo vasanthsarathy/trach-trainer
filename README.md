@@ -4,7 +4,7 @@ A web-based interactive trainer for learning and mastering the **Trachtenberg Sp
 
 ## What is the Trachtenberg System?
 
-The Trachtenberg System is a mental math technique that allows you to multiply large numbers quickly using specific patterns and rules. Instead of traditional multiplication, each multiplier (5, 6, 7, 9, 11, 12) has its own unique rule that makes calculations faster and easier.
+The Trachtenberg System is a mental math technique that allows you to multiply large numbers quickly using specific patterns and rules. Instead of traditional multiplication, each multiplier (2, 3, 4, 5, 6, 7, 8, 9, 11, 12) has its own unique rule that makes calculations faster and easier.
 
 ## Features
 
@@ -15,7 +15,7 @@ The Trachtenberg System is a mental math technique that allows you to multiply l
   - **Extreme**: Problem shown briefly then hidden, answer from memory
 
 - **Customizable Sessions**
-  - Select which multipliers to practice (×5, ×6, ×7, ×9, ×11, ×12)
+  - Select which multipliers to practice (×2, ×3, ×4, ×5, ×6, ×7, ×8, ×9, ×11, ×12)
   - Choose digit range (2-6 digits)
   - Set number of problems per session
 
@@ -206,9 +206,13 @@ All can be configured in the same project with `wrangler.toml`.
 
 Quick reference (see Rules panel in app for details):
 
+- **×2**: Double each digit
+- **×3**: Subtract from 10 (rightmost) or 9 (middle), double, add 5 if odd, add ⌊neighbor/2⌋
+- **×4**: Like ×9 but with ⌊neighbor/2⌋ instead of full neighbor
 - **×5**: 5 if digit odd + ⌊right neighbor/2⌋
 - **×6**: Add 5 if digit odd + ⌊right neighbor/2⌋
 - **×7**: 2×digit + 5 if digit odd + ⌊right neighbor/2⌋
+- **×8**: Subtract from 10 (rightmost) or 9 (middle), double, add neighbor
 - **×9**: Subtract from 10 (rightmost), subtract from 9 and add neighbor (middle), reduce leftmost by 1
 - **×11**: Add the neighbor (right digit)
 - **×12**: 2×digit + neighbor
@@ -216,7 +220,7 @@ Quick reference (see Rules panel in app for details):
 ## Tips for Learning
 
 1. **Start with Easy Mode** - Get comfortable with the rules using hints and carry slots
-2. **Master one multiplier at a time** - Focus on ×11 first (easiest), then ×12, ×5, etc.
+2. **Master one multiplier at a time** - Focus on ×2 or ×11 first (easiest), then ×12, ×3, ×5, etc.
 3. **Use 3-digit numbers initially** - Build confidence before moving to larger numbers
 4. **Reference the Rules panel** - Keep it open while learning
 5. **Progress gradually** - Move to Standard mode once you're comfortable, then Hard

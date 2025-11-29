@@ -177,6 +177,15 @@ const App = {
       Screen.show('setup-screen');
     });
 
+    // Progress screen
+    document.getElementById('progress-btn').addEventListener('click', () => {
+      this.showProgressScreen();
+    });
+
+    document.getElementById('progress-back-btn').addEventListener('click', () => {
+      Screen.show('setup-screen');
+    });
+
     // Enter key on answer inputs
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -302,6 +311,20 @@ const App = {
     // Update progress
     document.getElementById('current-problem').textContent = this.currentProblemIndex + 1;
     document.getElementById('total-problems').textContent = this.currentSession.problems.length;
+
+    // Finalize difficulty calculation with carry info (if not already done)
+    if (!problem.difficulty.tierLabel) {
+      const rule = TrachtenbergRules[problem.operand2];
+      const steps = rule.showSteps(problem.operand1);
+      DifficultyCalculator.addCarryInfo(problem.difficulty, steps);
+    }
+
+    // Display difficulty badge
+    const difficultyBadge = document.getElementById('problem-difficulty');
+    if (difficultyBadge) {
+      difficultyBadge.textContent = `Tier ${problem.difficulty.tier} • ${problem.difficulty.tierLabel}`;
+      difficultyBadge.className = `difficulty-badge tier-${problem.difficulty.tier}`;
+    }
 
     // Show problem operands - display as individual digits for alignment
     const operandsDiv = document.getElementById('problem-operands');
@@ -533,11 +556,15 @@ const App = {
     problem.isCorrect = userAnswer === problem.correctAnswer;
     problem.timeTaken = timeTaken;
 
-    // Show feedback
-    this.showFeedback(problem);
+    // Check for records and update personal bests
+    const records = PersonalBests.checkForRecords(problem);
+    PersonalBests.updateWithProblem(problem);
+
+    // Show feedback with records
+    this.showFeedback(problem, records);
   },
 
-  showFeedback(problem) {
+  showFeedback(problem, records = []) {
     const feedbackDiv = document.getElementById('feedback-display');
     const messageDiv = document.getElementById('feedback-message');
 
@@ -573,6 +600,26 @@ const App = {
       `;
     }
 
+    // Build PB comparison message
+    let pbHtml = '';
+    if (isCorrect && problem.timeTaken) {
+      const pb = PersonalBests.get();
+      const tierBest = pb.bestTimeByTier[problem.difficulty.tier];
+      const timeSeconds = (problem.timeTaken / 1000).toFixed(1);
+
+      if (tierBest) {
+        const bestSeconds = (tierBest.time / 1000).toFixed(1);
+        if (records.length > 0) {
+          pbHtml = `<p class="pb-comparison">Time: ${timeSeconds}s <span class="new-record">🎉 New Record!</span> (prev: ${bestSeconds}s)</p>`;
+        } else {
+          const diff = ((problem.timeTaken - tierBest.time) / 1000).toFixed(1);
+          pbHtml = `<p class="pb-comparison">Time: ${timeSeconds}s (best: ${bestSeconds}s, ${diff > 0 ? '+' : ''}${diff}s)</p>`;
+        }
+      } else {
+        pbHtml = `<p class="pb-comparison">Time: ${timeSeconds}s <span class="new-record">🎉 First solve in Tier ${problem.difficulty.tier}!</span></p>`;
+      }
+    }
+
     messageDiv.innerHTML = `
       <div class="feedback-result ${isCorrect ? 'text-success' : 'text-error'}">
         ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
@@ -581,6 +628,7 @@ const App = {
         <p><strong>Your answer:</strong> <span class="font-mono">${problem.userAnswer}</span></p>
         <p><strong>Correct answer:</strong> <span class="font-mono">${problem.correctAnswer}</span></p>
         <p><strong>Time taken:</strong> ${formatDuration(problem.timeTaken)}</p>
+        ${pbHtml}
       </div>
       ${stepsHtml}
     `;
@@ -633,12 +681,25 @@ const App = {
     const avgTime = answered.length > 0 ? totalTime / answered.length : 0;
     const accuracy = answered.length > 0 ? (correct.length / answered.length) * 100 : 0;
 
+    // Calculate difficulty range
+    const tiers = answered.map(p => p.difficulty.tier);
+    const minTier = tiers.length > 0 ? Math.min(...tiers) : 0;
+    const maxTier = tiers.length > 0 ? Math.max(...tiers) : 0;
+
+    // Count records broken (check each problem)
+    const recordsCount = answered.reduce((count, p) => {
+      return count + PersonalBests.checkForRecords(p).length;
+    }, 0);
+
     return {
       total: problems.length,
       answered: answered.length,
       correct: correct.length,
       accuracy: Math.round(accuracy),
-      avgTime
+      avgTime,
+      minTier,
+      maxTier,
+      recordsCount
     };
   },
 
@@ -648,7 +709,98 @@ const App = {
       `${stats.correct}/${stats.answered}`;
     document.getElementById('stat-avg-time').textContent = formatDuration(stats.avgTime);
 
+    // Display difficulty stats
+    const difficultyText = stats.minTier === stats.maxTier
+      ? `Tier ${stats.minTier}`
+      : `Tier ${stats.minTier}-${stats.maxTier}`;
+    const difficultyElement = document.getElementById('stat-difficulty');
+    if (difficultyElement) {
+      difficultyElement.textContent = difficultyText;
+    }
+
+    const recordsElement = document.getElementById('stat-records');
+    if (recordsElement) {
+      recordsElement.textContent = stats.recordsCount;
+    }
+
     Screen.show('complete-screen');
+  },
+
+  showProgressScreen() {
+    const mastery = ProgressTracker.getTierMastery();
+    const multipliers = ProgressTracker.getMultiplierPerformance();
+    const pb = PersonalBests.get();
+
+    // Render tier grid
+    const tierGrid = document.getElementById('tier-grid');
+    if (tierGrid) {
+      tierGrid.innerHTML = mastery.map(tier => `
+        <div class="tier-tile ${tier.isMastered ? 'mastered' : ''} ${!tier.isUnlocked ? 'locked' : ''}">
+          <div class="tier-number">Tier ${tier.tier}</div>
+          <div class="tier-label">${tier.label}</div>
+          ${tier.isUnlocked ? `
+            <div class="tier-stats">
+              <div>${tier.accuracy.toFixed(0)}% accuracy</div>
+              <div>${(tier.avgTime / 1000).toFixed(1)}s avg</div>
+              <div>${tier.attempted} attempts</div>
+            </div>
+          ` : '<div class="tier-locked">🔒 Not attempted</div>'}
+        </div>
+      `).join('');
+    }
+
+    // Render multiplier performance
+    const multChart = document.getElementById('multiplier-chart');
+    if (multChart) {
+      multChart.innerHTML = multipliers.map(m => `
+        <div class="mult-bar">
+          <div class="mult-label">×${m.multiplier}</div>
+          <div class="mult-progress-bar">
+            <div class="mult-fill" style="width: ${m.accuracy}%"></div>
+          </div>
+          <div class="mult-stats">${m.accuracy.toFixed(0)}% (${m.totalCorrect}/${m.totalAttempts})</div>
+        </div>
+      `).join('');
+    }
+
+    // Render personal records
+    const recordsList = document.getElementById('records-list');
+    if (recordsList) {
+      const records = Object.entries(pb.bestTimeByTier)
+        .sort(([a], [b]) => parseInt(a) - parseInt(b))
+        .map(([tier, record]) => `
+          <div class="record-item">
+            <span class="record-tier">Tier ${tier}</span>
+            <span class="record-time">${(record.time / 1000).toFixed(1)}s</span>
+          </div>
+        `).join('');
+      recordsList.innerHTML = records || '<p class="text-secondary">No records yet. Keep practicing!</p>';
+    }
+
+    // Render milestones
+    const milestones = document.getElementById('milestones-display');
+    if (milestones) {
+      milestones.innerHTML = `
+        <div class="milestone-item">
+          <div class="milestone-value">${pb.milestones.totalProblems}</div>
+          <div class="milestone-label">Problems Solved</div>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-value">${pb.milestones.overallAccuracy.toFixed(0)}%</div>
+          <div class="milestone-label">Overall Accuracy</div>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-value">${pb.milestones.tiersMastered.length}/10</div>
+          <div class="milestone-label">Tiers Mastered</div>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-value">${pb.milestones.longestStreak}</div>
+          <div class="milestone-label">Best Streak</div>
+        </div>
+      `;
+    }
+
+    Screen.show('progress-screen');
   },
 
   showHistory() {

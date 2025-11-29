@@ -416,3 +416,271 @@ const Numpad = {
     });
   }
 };
+
+// Difficulty Calculator
+const DifficultyCalculator = {
+  // Multiplier complexity mapping (1-10 scale)
+  MULTIPLIER_COMPLEXITY: {
+    2: 1,   // Easiest: simple doubling
+    3: 2,   // Easy: subtract and double pattern
+    4: 3,   // Easy-medium: subtract pattern
+    5: 4,
+    6: 5,
+    7: 7,
+    8: 6,   // Medium: subtract, double, add neighbor
+    9: 10,  // Hardest: complex subtraction pattern
+    11: 1,  // Easiest: add neighbor
+    12: 2   // Easy: double and add neighbor
+  },
+
+  // Tier boundaries and labels
+  TIER_BOUNDARIES: [0, 80, 110, 140, 180, 220, 260, 281, 311, 361, 999],
+  TIER_LABELS: ['', 'Beginner', 'Easy', 'Basic', 'Developing', 'Intermediate',
+                'Moderate', 'Challenging', 'Advanced', 'Expert', 'Master'],
+
+  // Calculate difficulty (without carries initially)
+  calculatePartial(operand1, operand2) {
+    const digitCount = operand1.toString().length;
+    const multiplierComplexity = this.MULTIPLIER_COMPLEXITY[operand2];
+
+    const multiplierScore = multiplierComplexity * 25;
+    const digitScore = digitCount * 15;
+
+    return {
+      score: multiplierScore + digitScore,
+      tier: this.getTierFromScore(multiplierScore + digitScore),
+      tierLabel: '',
+      breakdown: {
+        multiplierScore,
+        digitScore,
+        carryScore: 0,
+        carryCount: 0
+      }
+    };
+  },
+
+  // Add carry information after calculation
+  addCarryInfo(difficulty, steps) {
+    const carryCount = steps.filter(s => s.newCarry > 0).length;
+    const carryScore = Math.min(10, carryCount) * 10;
+
+    difficulty.score += carryScore;
+    difficulty.tier = this.getTierFromScore(difficulty.score);
+    difficulty.tierLabel = this.TIER_LABELS[difficulty.tier];
+    difficulty.breakdown.carryScore = carryScore;
+    difficulty.breakdown.carryCount = carryCount;
+
+    return difficulty;
+  },
+
+  getTierFromScore(score) {
+    for (let i = 1; i < this.TIER_BOUNDARIES.length; i++) {
+      if (score < this.TIER_BOUNDARIES[i]) return i;
+    }
+    return 10;
+  },
+
+  getTierLabel(tier) {
+    return this.TIER_LABELS[tier] || '';
+  }
+};
+
+// Personal Bests Tracker
+const PersonalBests = {
+  // Get from localStorage
+  get() {
+    const data = localStorage.getItem('trach_personal_bests');
+    return data ? JSON.parse(data) : this.getEmptyState();
+  },
+
+  // Save to localStorage
+  save(data) {
+    localStorage.setItem('trach_personal_bests', JSON.stringify(data));
+  },
+
+  // Empty initial state
+  getEmptyState() {
+    return {
+      bestTimeByTier: {},
+      tierStats: {},
+      multiplierStats: {},
+      milestones: {
+        totalProblems: 0,
+        totalCorrect: 0,
+        overallAccuracy: 0,
+        tiersUnlocked: [],
+        tiersMastered: [],
+        longestStreak: 0,
+        currentStreak: 0,
+        firstSession: null,
+        lastSession: null
+      }
+    };
+  },
+
+  // Update with a single problem result
+  updateWithProblem(problem) {
+    const pb = this.get();
+    const tier = problem.difficulty.tier;
+    const multiplier = problem.operand2;
+
+    // Update tier stats
+    if (!pb.tierStats[tier]) {
+      pb.tierStats[tier] = {
+        totalAttempts: 0,
+        totalCorrect: 0,
+        totalTime: 0,
+        avgTime: 0,
+        accuracy: 0,
+        firstAttempt: Date.now(),
+        lastAttempt: Date.now()
+      };
+    }
+
+    const tierStat = pb.tierStats[tier];
+    tierStat.totalAttempts++;
+    if (problem.isCorrect) tierStat.totalCorrect++;
+    if (problem.timeTaken) tierStat.totalTime += problem.timeTaken;
+    tierStat.avgTime = tierStat.totalTime / tierStat.totalAttempts;
+    tierStat.accuracy = (tierStat.totalCorrect / tierStat.totalAttempts) * 100;
+    tierStat.lastAttempt = Date.now();
+
+    // Update best time if correct and faster
+    if (problem.isCorrect && problem.timeTaken) {
+      if (!pb.bestTimeByTier[tier] || problem.timeTaken < pb.bestTimeByTier[tier].time) {
+        pb.bestTimeByTier[tier] = {
+          time: problem.timeTaken,
+          problemId: problem.id,
+          date: Date.now()
+        };
+      }
+    }
+
+    // Update multiplier stats
+    if (!pb.multiplierStats[multiplier]) {
+      pb.multiplierStats[multiplier] = {
+        totalAttempts: 0,
+        totalCorrect: 0,
+        avgTime: 0,
+        accuracy: 0,
+        bestStreak: 0,
+        currentStreak: 0
+      };
+    }
+
+    const multStat = pb.multiplierStats[multiplier];
+    multStat.totalAttempts++;
+    if (problem.isCorrect) {
+      multStat.totalCorrect++;
+      multStat.currentStreak++;
+      if (multStat.currentStreak > multStat.bestStreak) {
+        multStat.bestStreak = multStat.currentStreak;
+      }
+    } else {
+      multStat.currentStreak = 0;
+    }
+    multStat.accuracy = (multStat.totalCorrect / multStat.totalAttempts) * 100;
+
+    // Update milestones
+    pb.milestones.totalProblems++;
+    if (problem.isCorrect) pb.milestones.totalCorrect++;
+    pb.milestones.overallAccuracy = (pb.milestones.totalCorrect / pb.milestones.totalProblems) * 100;
+
+    if (!pb.milestones.tiersUnlocked.includes(tier)) {
+      pb.milestones.tiersUnlocked.push(tier);
+      pb.milestones.tiersUnlocked.sort((a, b) => a - b);
+    }
+
+    // Check for tier mastery (>90% accuracy over 10+ problems)
+    if (tierStat.totalAttempts >= 10 && tierStat.accuracy >= 90) {
+      if (!pb.milestones.tiersMastered.includes(tier)) {
+        pb.milestones.tiersMastered.push(tier);
+        pb.milestones.tiersMastered.sort((a, b) => a - b);
+      }
+    }
+
+    pb.milestones.lastSession = Date.now();
+    if (!pb.milestones.firstSession) {
+      pb.milestones.firstSession = Date.now();
+    }
+
+    this.save(pb);
+    return pb;
+  },
+
+  // Check if problem broke any records
+  checkForRecords(problem) {
+    const pb = this.get();
+    const records = [];
+
+    if (problem.isCorrect && problem.timeTaken) {
+      const tier = problem.difficulty.tier;
+      const currentBest = pb.bestTimeByTier[tier];
+
+      if (!currentBest || problem.timeTaken < currentBest.time) {
+        records.push({
+          type: 'tier_best',
+          tier,
+          oldTime: currentBest?.time,
+          newTime: problem.timeTaken
+        });
+      }
+    }
+
+    return records;
+  }
+};
+
+// Progress Tracker
+const ProgressTracker = {
+  // Get tier mastery summary
+  getTierMastery() {
+    const pb = PersonalBests.get();
+    const mastery = [];
+
+    for (let tier = 1; tier <= 10; tier++) {
+      const stats = pb.tierStats[tier];
+      if (stats) {
+        mastery.push({
+          tier,
+          label: DifficultyCalculator.getTierLabel(tier),
+          attempted: stats.totalAttempts,
+          accuracy: stats.accuracy,
+          avgTime: stats.avgTime,
+          isMastered: stats.totalAttempts >= 10 && stats.accuracy >= 90,
+          isUnlocked: true
+        });
+      } else {
+        mastery.push({
+          tier,
+          label: DifficultyCalculator.getTierLabel(tier),
+          attempted: 0,
+          accuracy: 0,
+          avgTime: 0,
+          isMastered: false,
+          isUnlocked: false
+        });
+      }
+    }
+
+    return mastery;
+  },
+
+  // Get multiplier performance summary
+  getMultiplierPerformance() {
+    const pb = PersonalBests.get();
+    return [2, 3, 4, 5, 6, 7, 8, 9, 11, 12].map(mult => {
+      const stats = pb.multiplierStats[mult] || {
+        totalAttempts: 0,
+        totalCorrect: 0,
+        accuracy: 0,
+        avgTime: 0,
+        bestStreak: 0
+      };
+      return {
+        multiplier: mult,
+        ...stats
+      };
+    });
+  }
+};
