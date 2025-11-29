@@ -315,7 +315,7 @@ const App = {
     // Finalize difficulty calculation with carry info (if not already done)
     if (!problem.difficulty.tierLabel) {
       const rule = TrachtenbergRules[problem.operand2];
-      const steps = rule.showSteps(problem.operand1);
+      const { steps } = rule.showSteps(problem.operand1);
       DifficultyCalculator.addCarryInfo(problem.difficulty, steps);
     }
 
